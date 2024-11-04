@@ -7,7 +7,7 @@ Discover the safety of your next home or investment with SafeStreet! This platfo
 ---
 
 ## Logo
-![MINdLIFT (1) (1)](https://github.com/Josh-Pai/IS7024/blob/main/WhatsApp%20Image%202024-11-03%20at%205.03.13%20PM.jpeg)
+![MINdLIFT (1) (1)](https://github.com/Josh-Pai/IS7024/blob/main/logo.jpeg)
 
 ---
 
