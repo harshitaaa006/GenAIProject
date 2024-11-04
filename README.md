@@ -1,5 +1,4 @@
-# IS7024 - Crime Rate Insights 
-# SafeStreet
+# IS7024 - SafeStreet
 
 ## Introduction
 
