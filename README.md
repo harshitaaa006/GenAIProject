@@ -104,11 +104,4 @@ Use GitHub Projects to manage tasks and track progress. The project boards shoul
 
 ---
 
-## Sample Tasks (Examples for GitHub Project Board)
-
-- **Task 1**: Set up the SQL database schema for crime data storage.
-- **Task 2**: Integrate the Google Maps API and display crime markers.
-- **Task 3**: Develop the filtering system for crime data by type and date.
-- **Task 4**: Create the safety score calculation algorithm.
-- **Task 5**: Deploy the project to Azure and conduct initial testing.
 
