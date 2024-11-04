@@ -25,9 +25,9 @@ The storyboard for SafeStreet outlines the main user screens and features:
 ## GitHub Projects
 Use GitHub Projects to manage tasks and track progress. The project boards should include the following sections:
 
--**To-Do**: Tasks yet to be started
--**In Progress**: Tasks currently being worked on
--**Completed**: Tasks that are done
+- **To-Do**: Tasks yet to be started.
+- **In Progress**: Tasks currently being worked on.
+- **Completed**: Tasks that are done.
 
 ---
 
