@@ -7,7 +7,7 @@ Discover the safety of your next home or investment with SafeStreet! This platfo
 ---
 
 ## Logo
-![MINdLIFT (1) (1)](https://github.com/Josh-Pai/IS7024/blob/main/logo.jpeg)
+![SafeStreet (1) (1)](https://github.com/Josh-Pai/IS7024/blob/main/logo.jpeg)
 
 ---
 
@@ -20,6 +20,14 @@ The storyboard for SafeStreet outlines the main user screens and features:
 - **Neighborhood Summary**: A summary page for each neighborhood with crime stats, recent incidents, and a simple safety score.
 - **Safety Score**: A visual indicator (e.g., green, yellow, red) based on recent crime levels in the neighborhood.
 - **Crime Trend Chart**: Monthly, yearly, or weekly line/bar chart showing trends in neighborhood crime levels over time.
+
+---
+## GitHub Projects
+Use GitHub Projects to manage tasks and track progress. The project boards should include the following sections:
+
+-**To-Do**: Tasks yet to be started
+-**In Progress**: Tasks currently being worked on
+-**Completed**: Tasks that are done
 
 ---
 
