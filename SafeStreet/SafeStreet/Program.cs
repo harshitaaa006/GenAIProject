@@ -21,5 +21,7 @@ app.UseRouting();
 app.UseAuthorization();
 
 app.MapRazorPages();
+app.MapFallbackToPage("/Search");
+
 
 app.Run();
