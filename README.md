@@ -15,7 +15,7 @@ Discover the safety of your next home or investment with SafeStreet! This platfo
 
 The storyboard for SafeStreet outlines the main user screens and features:
 
-- **Home Page**: Introduction to SafeStreet with navigation links to other sections.
+- **Search Page**: Introduction to SafeStreet with Search feature that takes you to crime data breakdowns based on city or zip code.
 - **Crime Data Map**: An interactive map where users can view crime markers, filter by crime type, and adjust date ranges.
 - **Neighborhood Summary**: A summary page for each neighborhood with crime stats, recent incidents, and a simple safety score.
 - **Safety Score**: A visual indicator (e.g., green, yellow, red) based on recent crime levels in the neighborhood.
