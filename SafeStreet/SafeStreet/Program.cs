@@ -2,6 +2,8 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddRazorPages();
+builder.Services.AddConnections();
+builder.Services.AddEndpointsApiExplorer();
 
 var app = builder.Build();
 
@@ -23,5 +25,12 @@ app.UseAuthorization();
 app.MapRazorPages();
 
 app.MapFallbackToPage("/Search");
+
+app.MapControllerRoute(
+    name: "defalut",
+    pattern: "{Controller=Home}/{action=Index}/{id?}");
+
+    
+
 
 app.Run();
