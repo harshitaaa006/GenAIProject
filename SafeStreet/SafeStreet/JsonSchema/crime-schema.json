@@ -1,0 +1,147 @@
+{
+  "$schema": "http://json-schema.org/draft-06/schema#",
+  "type": "array",
+  "items": {
+    "$ref": "#/definitions/CrimeElement"
+  },
+  "definitions": {
+    "CrimeElement": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "instanceid": {
+          "type": "string"
+        },
+        "incident_no": {
+          "type": "string",
+          "format": "integer",
+            "minimum": 0
+        },
+        "date_reported": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "date_from": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "date_to": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "clsd": {
+          "type": "string"
+        },
+        "ucr": {
+          "type": "string",
+          "format": "integer"
+        },
+        "dst": {
+          "type": "string"
+        },
+        "beat": {
+          "type": "string",
+          "format": "integer"
+        },
+        "offense": {
+          "type": "string"
+        },
+        "location": {
+          "type": "string"
+        },
+        "theft_code": {
+          "type": "string"
+        },
+        "dayofweek": {
+          "type": "string"
+        },
+        "rpt_area": {
+          "type": "string",
+          "format": "integer"
+        },
+        "cpd_neighborhood": {
+          "type": "string"
+        },
+        "weapons": {
+          "type": "string"
+        },
+        "date_of_clearance": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "hour_from": {
+          "type": "string",
+          "format": "integer"
+        },
+        "hour_to": {
+          "type": "string",
+          "format": "integer"
+        },
+        "address_x": {
+          "type": "string"
+        },
+        "longitude_x": {
+          "type": "string"
+        },
+        "latitude_x": {
+          "type": "string"
+        },
+        "victim_age": {
+          "type": "string",
+            "minLength": 0
+        },
+        "victim_gender": {
+          "type": "string"
+        },
+        "suspect_age": {
+          "type": "string",
+            "minLength": 0
+        },
+        "ucr_group": {
+          "type": "string"
+        },
+        "zip": {
+          "type": "string",
+          "format": "integer",
+          "minimum": 0,
+            "maximum": 15
+        },
+        "community_council_neighborhood": {
+          "type": "string"
+        },
+        "sna_neighborhood": {
+          "type": "string"
+        },
+        "suspect_gender": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "beat",
+        "clsd",
+        "community_council_neighborhood",
+        "cpd_neighborhood",
+        "date_from",
+        "date_of_clearance",
+        "date_reported",
+        "date_to",
+        "dayofweek",
+        "dst",
+        "hour_from",
+        "hour_to",
+        "incident_no",
+        "instanceid",
+        "location",
+        "offense",
+        "sna_neighborhood",
+        "suspect_age",
+        "ucr",
+        "ucr_group",
+        "victim_age",
+        "weapons",
+        "zip"
+      ],
+      "title": "CrimeElement"
+    }
+  }
+}

@@ -1,6 +1,8 @@
 using System.Net.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using Newtonsoft.Json.Linq;
+using Newtonsoft.Json.Schema;
 using QuickType;
 
 namespace SafeStreet.Pages
@@ -30,10 +32,29 @@ namespace SafeStreet.Pages
                 Task<string> readString = result.Content.ReadAsStringAsync();
                 string crimeJSON = readString.Result;
 
+                // validate incoming JSON
+                // read our schema file.
+                JSchema jSchema = JSchema.Parse(System.IO.File.ReadAllText("crime-schema.json"));
+                JArray specimenArray = JArray.Parse(crimeJSON);
+                // create a collection to hold errors.
+                IList<string> validationEvents = new List<String>();
+
+                if (specimenArray.IsValid(jSchema, out validationEvents))
+                {
+                    crimes = Crime.FromJson(crimeJSON);
+                }
+                else
+                {
+                    foreach (string evt in validationEvents)
+                    {
+                        Console.WriteLine(evt);
+                    }
+                }
 
 
             }
+
+        }
         }
     }
-}
 
