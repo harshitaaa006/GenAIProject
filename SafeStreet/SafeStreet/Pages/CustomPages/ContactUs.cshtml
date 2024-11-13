@@ -1,0 +1,45 @@
+﻿@page
+@model SafeStreet.Pages.CustomPages.ContactUsModel
+@{
+    ViewData["Title"] = "Contact Us";
+}
+<div class="container my-5">
+    <h1 class="text-center mb-5 text-primary">Contact Us</h1>
+
+    <div class="row mb-5">
+        <div class="col-lg-8 mx-auto">
+            <p class="lead text-center">
+                Have questions, feedback, or concerns? Reach out to the SafeStreet team using the form below, and we’ll respond promptly.
+            </p>
+        </div>
+    </div>
+
+    <form class="mb-5">
+        <div class="form-group">
+            <label for="name" class="text-primary font-weight-bold">Name</label>
+            <input type="text" class="form-control" id="name" placeholder="Enter your name" required>
+        </div>
+        <div class="form-group">
+            <label for="email" class="text-primary font-weight-bold">Email</label>
+            <input type="email" class="form-control" id="email" placeholder="Enter your email" required>
+        </div>
+        <div class="form-group">
+            <label for="message" class="text-primary font-weight-bold">Message</label>
+            <textarea class="form-control" id="message" rows="5" placeholder="Your message" required></textarea>
+        </div>
+        <button type="submit" class="btn btn-dark">Send Message</button>
+    </form>
+</div>
+
+<style>
+    .text-primary {
+        color: #007bff; /* SafeStreet's primary color for branding */
+    }
+    .font-weight-bold {
+        font-weight: bold;
+        font-family: Arial, sans-serif;
+    }
+</style>
+
+<h2>Contact Us</h2>
+<p>If you have any questions or feedback, feel free to contact us at <a href="mailto:contact@safestreet.com"></a>.</p>
