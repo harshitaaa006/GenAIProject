@@ -15,7 +15,7 @@ namespace QuickType
     using Newtonsoft.Json;
     using Newtonsoft.Json.Converters;
 
-    public partial class Welcome
+    public partial class Crime
     {
         [JsonProperty("instanceid")]
         public string Instanceid { get; set; }
