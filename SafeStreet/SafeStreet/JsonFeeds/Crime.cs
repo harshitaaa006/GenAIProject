@@ -21,8 +21,7 @@ namespace CincinnatiCrime
         public string Instanceid { get; set; }
 
         [JsonProperty("incident_no")]
-        [JsonConverter(typeof(ParseStringConverter))]
-        public long IncidentNo { get; set; }
+        public string IncidentNo { get; set; }
 
         [JsonProperty("date_reported")]
         public DateTimeOffset DateReported { get; set; }
@@ -37,15 +36,13 @@ namespace CincinnatiCrime
         public string Clsd { get; set; }
 
         [JsonProperty("ucr")]
-        [JsonConverter(typeof(ParseStringConverter))]
-        public long Ucr { get; set; }
+        public string Ucr { get; set; }
 
         [JsonProperty("dst")]
         public string Dst { get; set; }
 
         [JsonProperty("beat")]
-        [JsonConverter(typeof(ParseStringConverter))]
-        public long Beat { get; set; }
+        public String Beat { get; set; }
 
         [JsonProperty("offense")]
         public string Offense { get; set; }
@@ -60,8 +57,7 @@ namespace CincinnatiCrime
         public string Dayofweek { get; set; }
 
         [JsonProperty("rpt_area")]
-        [JsonConverter(typeof(ParseStringConverter))]
-        public long RptArea { get; set; }
+        public String RptArea { get; set; }
 
         [JsonProperty("cpd_neighborhood")]
         public string CpdNeighborhood { get; set; }
@@ -73,8 +69,7 @@ namespace CincinnatiCrime
         public DateTimeOffset DateOfClearance { get; set; }
 
         [JsonProperty("hour_from")]
-        [JsonConverter(typeof(ParseStringConverter))]
-        public long HourFrom { get; set; }
+        public String HourFrom { get; set; }
 
         [JsonProperty("hour_to")]
         [JsonConverter(typeof(ParseStringConverter))]
@@ -102,8 +97,7 @@ namespace CincinnatiCrime
         public string UcrGroup { get; set; }
 
         [JsonProperty("zip")]
-        [JsonConverter(typeof(ParseStringConverter))]
-        public long Zip { get; set; }
+        public string Zip { get; set; }
 
         [JsonProperty("community_council_neighborhood")]
         public string CommunityCouncilNeighborhood { get; set; }
@@ -144,15 +138,32 @@ namespace CincinnatiCrime
 
         public override object ReadJson(JsonReader reader, Type t, object existingValue, JsonSerializer serializer)
         {
-            if (reader.TokenType == JsonToken.Null) return null;
-            var value = serializer.Deserialize<string>(reader);
-            long l;
-            if (Int64.TryParse(value, out l))
+            // Handle null values directly
+            if (reader.TokenType == JsonToken.Null)
             {
-                return l;
+                return t == typeof(long?) ? (long?)null : 0; // Return null for nullable long, otherwise 0
             }
-            throw new Exception("Cannot unmarshal type long");
+
+            // Handle integer tokens directly
+            if (reader.TokenType == JsonToken.Integer)
+            {
+                return Convert.ToInt64(reader.Value); // Directly return the number as long
+            }
+
+            // Attempt to parse as a string if it’s a string token
+            if (reader.TokenType == JsonToken.String)
+            {
+                var value = serializer.Deserialize<string>(reader);
+                if (Int64.TryParse(value, out long l))
+                {
+                    return l;
+                }
+            }
+
+            // Log unexpected token type or value for debugging
+            throw new Exception($"Cannot unmarshal type long. Unexpected token: {reader.TokenType}, Value: {reader.Value}");
         }
+
 
         public override void WriteJson(JsonWriter writer, object untypedValue, JsonSerializer serializer)
         {

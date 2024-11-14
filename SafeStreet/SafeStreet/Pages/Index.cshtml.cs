@@ -20,6 +20,14 @@ namespace SafeStreet.Pages
 
         public void OnGet()
         {
+            string brand = "Cincinnati Crime";
+            string inBrand = Request.Query["Brand"];
+            if (inBrand != null && inBrand.Length > 0)
+            {
+                brand = inBrand;
+            }
+            ViewData["Brand"] = brand;
+
             var task = client.GetAsync("https://data.cincinnati-oh.gov/resource/k59e-2pvf.json");
             HttpResponseMessage result = task.Result;
             List<Crime> crimes = new List<Crime>();
@@ -27,10 +35,16 @@ namespace SafeStreet.Pages
             {
                 Task<string> readString = result.Content.ReadAsStringAsync();
                 string jsonString = readString.Result;
-                crimes= Crime.FromJson(jsonString);
-            }
-            ViewData["Crimes"] = crimes;
+                crimes = Crime.FromJson(jsonString);
 
+                var neighborhoods = crimes
+                    .Where(c => !String.IsNullOrEmpty(c.CpdNeighborhood))
+                    .Select(c => c.CpdNeighborhood)
+                    .Distinct()
+                    .ToList();
+
+                ViewData["Neighborhoods"] = neighborhoods;
+            }
         }
     }
 }

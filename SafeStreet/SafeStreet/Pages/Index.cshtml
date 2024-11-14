@@ -2,8 +2,24 @@
 @using CincinnatiCrime
 @model IndexModel
 @{
-    var brand = ViewData["Brand"]
-    ViewData["Title"] = "Home page";
+    var brand = ViewData["Brand"] ?? "Crime Data";
+    ViewData["Title"] = brand;
+    List<string> neighborhoods = ViewData["Neighborhoods"] as List<string> ?? new List<string>();
+}
+<div class="text-center">
+<h1> @brand - Neighborhoods </h1>
+<p> Search by neighborhood and zipcode for crime data</p>
+</div>
+
+@if (neighborhoods.Any())
+
+{
+    <ul>
+    @foreach (var neighborhood in neighborhoods)
+        {
+            <li>@neighborhood</li>
+        }
+    </ul>
 }
 
 <div class="text-center">
