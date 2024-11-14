@@ -2,9 +2,15 @@
 @model IndexModel
 @{
     ViewData["Title"] = "Home page";
+    List<Crime> crimes = (List<Crime>) ViewData["crimes"];
 }
 
 <div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+
+    <h2>Total Crimes Reported:</h2>
+    <p>In the Last Month: @Model.CrimeCountLastMonth</p>
+    <p>In the Last 6 Months: @Model.CrimeCountLastSixMonths</p>
+    <p>In the Last Year: @Model.CrimeCountLastYear</p>
+    <p>In the Last 2 Years: @Model.CrimeCountLastTwoYears</p>
+
 </div>
