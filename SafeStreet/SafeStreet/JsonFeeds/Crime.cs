@@ -2,11 +2,11 @@
 //
 // To parse this JSON data, add NuGet 'Newtonsoft.Json' then do:
 //
-//    using QuickType;
+//    using CincinnatiCrime;
 //
 //    var crime = Crime.FromJson(jsonString);
 
-namespace QuickType
+namespace CincinnatiCrime
 {
     using System;
     using System.Collections.Generic;
@@ -117,12 +117,12 @@ namespace QuickType
 
     public partial class Crime
     {
-        public static List<Crime> FromJson(string json) => JsonConvert.DeserializeObject<List<Crime>>(json, QuickType.Converter.Settings);
+        public static List<Crime> FromJson(string json) => JsonConvert.DeserializeObject<List<Crime>>(json, CincinnatiCrime.Converter.Settings);
     }
 
     public static class Serialize
     {
-        public static string ToJson(this List<Crime> self) => JsonConvert.SerializeObject(self, QuickType.Converter.Settings);
+        public static string ToJson(this List<Crime> self) => JsonConvert.SerializeObject(self, CincinnatiCrime.Converter.Settings);
     }
 
     internal static class Converter
