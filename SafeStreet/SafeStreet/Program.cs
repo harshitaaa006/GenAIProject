@@ -4,6 +4,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddRazorPages();
 builder.Services.AddConnections();
 builder.Services.AddEndpointsApiExplorer();
+builder.Configuration["MapboxApiKey"] = Environment.GetEnvironmentVariable("MAPBOX_API_KEY");
 
 var app = builder.Build();
 
