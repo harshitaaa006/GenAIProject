@@ -60,7 +60,7 @@ namespace SafeStreet
 
         [JsonProperty("rpt_area")]
         [Newtonsoft.Json.JsonConverter(typeof(ParseStringConverter))]
-        public long RptArea { get; set; }
+        public object RptArea { get; set; }
 
         [JsonProperty("cpd_neighborhood")]
         public string CpdNeighborhood { get; set; }
@@ -126,6 +126,10 @@ namespace SafeStreet
         public string GetBeatAsString()
         {
             return Beat?.ToString();
+        }
+        public string GetRptAreaAsString()
+        {
+            return RptArea?.ToString();
         }
     }
 

@@ -15,47 +15,57 @@ namespace SafeStreet.Pages
             _logger = logger;
         }
 
+        public List<Crime> Crimes { get; set; } = new List<Crime>();
         public int CrimeCountLastMonth { get; set; }
         public int CrimeCountLastSixMonths { get; set; }
         public int CrimeCountLastYear { get; set; }
         public int CrimeCountLastTwoYears { get; set; }
 
-        public void OnGet()
+        public async Task OnGetAsync()
         {
-            // Grab specimen data.
-            Task<HttpResponseMessage> task = _httpClient.GetAsync("https://data.cincinnati-oh.gov/resource/k59e-2pvf.json");
-            HttpResponseMessage result = task.Result;
-
-
-
-
-            List<Crime> Crimes = new List<Crime>();
-            if (result.IsSuccessStatusCode)
+            try
             {
-                Task<string> readString = result.Content.ReadAsStringAsync();
-                string crimeJSON = readString.Result;
+                int limit = 1000;
+                int offset = 0;
+                int totalRecordsToFetch = 60000;
+                bool moreData = true;
 
+                while (moreData)
+                {
+                    string url = $"https://data.cincinnati-oh.gov/resource/k59e-2pvf.json?$limit={limit}&$offset={offset}";
+                    HttpResponseMessage response = await _httpClient.GetAsync(url);
 
+                    if (response.IsSuccessStatusCode)
+                    {
+                        string crimeJson = await response.Content.ReadAsStringAsync();
+                        var crimesBatch = Crime.FromJson(crimeJson);
 
-                // validate incoming JSON
-                // read our schema file.
-                //JSchema jSchema = JSchema.Parse(System.IO.File.ReadAllText("crime-schema.json"));
-                //JArray specimenArray = JArray.Parse(crimeJSON);
-                // create a collection to hold errors.
-                //IList<string> validationEvents = new List<String>();
+                        if (crimesBatch != null && crimesBatch.Any())
+                        {
+                            Crimes.AddRange(crimesBatch);
+                            offset += limit;
 
+                            // Log success for each iteration of the loop
+                            _logger.LogInformation($"Successfully fetched {crimesBatch.Count} records, current total: {Crimes.Count}, offset: {offset}");
 
-                //if (specimenArray.IsValid(jSchema, out validationEvents))
-                //{
-                    Crimes = Crime.FromJson(crimeJSON);
-                //}
-                //else
-                //{
-                //    foreach (string evt in validationEvents)
-                //    {
-                //        Console.WriteLine(evt);
-                //    }
-                //}
+                            // Stop if we have fetched enough records
+                            if (Crimes.Count >= totalRecordsToFetch)
+                            {
+                                _logger.LogInformation("Reached the target of 60,000 records. Stopping data fetch.");
+                                moreData = false;
+                            }
+                        }
+                        else
+                        {
+                            moreData = false; // No more data to fetch
+                        }
+                    }
+                    else
+                    {
+                        _logger.LogError($"Failed to fetch data: {response.StatusCode}");
+                        moreData = false; // Stop if an error occurs
+                    }
+                }
 
                 // Calculate the counts for different time periods
                 DateTime now = DateTime.Now;
@@ -64,14 +74,13 @@ namespace SafeStreet.Pages
                 CrimeCountLastYear = Crimes.Count(crime => crime.DateReported >= now.AddYears(-1));
                 CrimeCountLastTwoYears = Crimes.Count(crime => crime.DateReported >= now.AddYears(-2));
 
+                // Pass crimes to the Razor page through ViewData, if needed
                 ViewData["crimes"] = Crimes;
-
-
-
-
             }
-
-
+            catch (Exception ex)
+            {
+                _logger.LogError($"An error occurred while fetching or processing data: {ex.Message}");
+            }
         }
     }
 }
