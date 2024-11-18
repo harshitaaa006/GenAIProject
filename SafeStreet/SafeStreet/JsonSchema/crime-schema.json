@@ -81,10 +81,15 @@
           "type": "string"
         },
         "longitude_x": {
-          "type": "string"
+          "type": "string"     
+          "min_lng": -84.8172,
+          "max_lng": -80.5188
         },
         "latitude_x": {
-          "type": "string"
+          "type": "string",
+          "min_lat": 38.3761,
+          "max_lat": 42.321,
+     
         },
         "victim_age": {
           "type": "string",
