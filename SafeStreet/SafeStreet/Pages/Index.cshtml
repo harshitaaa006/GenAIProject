@@ -4,25 +4,42 @@
 @{
     var brand = ViewData["Brand"] ?? "Crime Data";
     ViewData["Title"] = brand;
-    List<string> neighborhoods = ViewData["Neighborhoods"] as List<string> ?? new List<string>();
+
+    // Chatgpt help
+    // Get offenses grouped by neighborhood from ViewData
+    var offensesByNeighborhood = ViewData["OffensesByNeighborhood"] as Dictionary<string, List<string>> ?? new Dictionary<string, List<string>>();
+    var query = ViewData["Query"] as string ?? string.Empty;
 }
+    //
+
 <div class="text-center">
-<h1> @brand - Neighborhoods </h1>
-<p> Search by neighborhood and zipcode for crime data</p>
+    <h1>@brand - Neighborhoods</h1>
+    <form method="get">
+        <label for="query">Search for Crime Data by Neeighborhood or Offense:</label>
+        <input type="text" id="query" name="query" />
+        <button type="submit">Search</button>
+    </form>
 </div>
 
-@if (neighborhoods.Any())
-
+@if (offensesByNeighborhood.Any())
 {
     <ul>
-    @foreach (var neighborhood in neighborhoods)
+        @foreach (var neighborhood in offensesByNeighborhood)
         {
-            <li>@neighborhood</li>
+            <li>
+                <strong>@neighborhood.Key</strong>
+                <ul>
+                    @foreach (var offense in neighborhood.Value)
+                    {
+                        <li>@offense</li>
+                    }
+                </ul>
+            </li>
         }
     </ul>
 }
+else
+{
+    <p>No data available for neighborhoods or offenses.</p>
+}
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
-</div>

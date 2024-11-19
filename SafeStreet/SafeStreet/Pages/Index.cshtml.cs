@@ -1,9 +1,8 @@
-using System.Net.Http;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json.Schema;
 using CincinnatiCrime;
+using System.Diagnostics.Eventing.Reader;
 
 namespace SafeStreet.Pages
 {
@@ -18,7 +17,7 @@ namespace SafeStreet.Pages
             _logger = logger;
         }
 
-        public void OnGet()
+        public void OnGet(string query) 
         {
             string brand = "Cincinnati Crime";
             string inBrand = Request.Query["Brand"];
@@ -35,17 +34,60 @@ namespace SafeStreet.Pages
             {
                 Task<string> readString = result.Content.ReadAsStringAsync();
                 string jsonString = readString.Result;
-                crimes = Crime.FromJson(jsonString);
+                JSchema schema = JSchema.Parse(System.IO.File.ReadAllText("crime-schema.json"));
+                JArray jsonArray = JArray.Parse(jsonString);
+                IList<string> crimeEvents = new List<string>();
+                if (jsonArray.IsValid(schema, out crimeEvents))
+                {
+                    crimes = Crime.FromJson(jsonString);
+                }
+                else
+                {
+                    foreach (string evt in crimeEvents)
+                    {
+                        Console.WriteLine(evt);
+                    }
+                    {
+                        if (result.IsSuccessStatusCode)
+                        {
+                        
 
-                var neighborhoods = crimes
-                    .Where(c => !String.IsNullOrEmpty(c.CpdNeighborhood))
-                    .Select(c => c.CpdNeighborhood)
-                    .Distinct()
-                    .ToList();
+                            var offenseByNeighborhood = jsonArray
+                         .Where(item => item["cpd_neighborhood"] != null && item["offense"] != null)
+                         .GroupBy(
+                            item => item["cpd_neighborhood"]?.ToString() ?? "Unknown Neighborhood",
+                            item => item["offense"]?.ToString() ?? "Unknown Offense"
+                 )
+                           //Chatgpt help:
+                          .ToDictionary(
+                            group => group.Key,
+                            group => group.Distinct().ToList()
+                        );
+                            if (!string.IsNullOrEmpty(query))
+                            {
+                                offenseByNeighborhood = offenseByNeighborhood
+                                    .Where(kvp =>
+                                            kvp.Key.Contains(query, StringComparison.OrdinalIgnoreCase) || // Check neighborhood
+                                            kvp.Value.Any(offense => offense.Contains(query, StringComparison.OrdinalIgnoreCase)) // Check offenses
+                    )
+                                    .ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
+                            }
+                            //
 
-                ViewData["Neighborhoods"] = neighborhoods;
+                            ViewData["OffensesByNeighborhood"] = offenseByNeighborhood;
+                        }
+                        else
+                        {
+                            ViewData["Query"] = query;
+                        }
+                    }
+                 
+
+                }
+                    
             }
         }
     }
 }
+
 
