@@ -71,27 +71,27 @@ namespace SafeStreet.Pages
                     }
                 }
 
-                // If latitude and longitude are provided, filter crimes within the specified radius and different time periods
+                
                 if (latitude.HasValue && longitude.HasValue)
                 {
-                    double radius = 1.0; // Define the radius in kilometers
+                   const double SEARCH_RADIUS = 1.0; 
 
                     // Filter crimes reported in the past time periods and within the radius
                     DateTime now = DateTime.Now;
                     NearbyCrimeCountLastMonth = Crimes
-                        .Where(crime => crime.DateReported >= now.AddMonths(-1) && IsWithinRadius(latitude.Value, longitude.Value, crime.LatitudeX, crime.LongitudeX, radius))
+                        .Where(crime => crime.DateReported >= now.AddMonths(-1) && IsWithinRadius(latitude.Value, longitude.Value, crime.LatitudeX, crime.LongitudeX, SEARCH_RADIUS))
                         .Count();
 
                     NearbyCrimeCountLastSixMonths = Crimes
-                        .Where(crime => crime.DateReported >= now.AddMonths(-6) && IsWithinRadius(latitude.Value, longitude.Value, crime.LatitudeX, crime.LongitudeX, radius))
+                        .Where(crime => crime.DateReported >= now.AddMonths(-6) && IsWithinRadius(latitude.Value, longitude.Value, crime.LatitudeX, crime.LongitudeX,SEARCH_RADIUS ))
                         .Count();
 
                     NearbyCrimeCountLastYear = Crimes
-                        .Where(crime => crime.DateReported >= now.AddYears(-1) && IsWithinRadius(latitude.Value, longitude.Value, crime.LatitudeX, crime.LongitudeX, radius))
+                        .Where(crime => crime.DateReported >= now.AddYears(-1) && IsWithinRadius(latitude.Value, longitude.Value, crime.LatitudeX, crime.LongitudeX,SEARCH_RADIUS ))
                         .Count();
 
                     NearbyCrimeCountLastTwoYears = Crimes
-                        .Where(crime => crime.DateReported >= now.AddYears(-2) && IsWithinRadius(latitude.Value, longitude.Value, crime.LatitudeX, crime.LongitudeX, radius))
+                        .Where(crime => crime.DateReported >= now.AddYears(-2) && IsWithinRadius(latitude.Value, longitude.Value, crime.LatitudeX, crime.LongitudeX, SEARCH_RADIUS))
                         .Count();
                 }
 
@@ -115,7 +115,7 @@ namespace SafeStreet.Pages
         }
 
         // Helper method to determine if a crime is within the specified radius
-        //generate by AI
+       
         private bool IsWithinRadius(double userLat, double userLon, string crimeLatStr, string crimeLonStr, double radiusKm)
         {
             if (double.TryParse(crimeLatStr, out double crimeLat) && double.TryParse(crimeLonStr, out double crimeLon))
@@ -127,10 +127,10 @@ namespace SafeStreet.Pages
         }
 
         // Haversine formula to calculate the distance between two coordinates in kilometers
-        //generate by AI
+        
         private double CalculateDistance(double lat1, double lon1, double lat2, double lon2)
         {
-            const double R = 6371; // Radius of the earth in km
+            const double EarthRadiusKm = 6371; 
             double dLat = ToRadians(lat2 - lat1);
             double dLon = ToRadians(lon2 - lon1);
             double a =
@@ -138,7 +138,7 @@ namespace SafeStreet.Pages
                 Math.Cos(ToRadians(lat1)) * Math.Cos(ToRadians(lat2)) *
                 Math.Sin(dLon / 2) * Math.Sin(dLon / 2);
             double c = 2 * Math.Atan2(Math.Sqrt(a), Math.Sqrt(1 - a));
-            return R * c; // Distance in km
+            return EarthRadiusKm * c; // Distance in km
         }
 
         private double ToRadians(double deg)

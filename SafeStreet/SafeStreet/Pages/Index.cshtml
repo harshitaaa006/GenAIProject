@@ -2,7 +2,7 @@
 @model SafeStreet.Pages.IndexModel
 @{
     ViewData["Title"] = "Home page";
-    List<Crime> crimes = (List<Crime>)ViewData["crimes"];
+    List<Crime> crimes = ViewData["crimes"] as List<Crime> ?? new List<Crime>();
 }
 
 <div class="text-center">
@@ -23,6 +23,7 @@
         </div>
         <button type="submit">Get Nearby Crimes</button>
     </form>
+
 
     @if (Model.NearbyCrimeCountLastTwoYears > 0)
     {
