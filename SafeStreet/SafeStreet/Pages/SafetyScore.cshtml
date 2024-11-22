@@ -1,0 +1,48 @@
+﻿@page
+@model SafetyScoreModel
+@{
+    ViewData["Title"] = "Safety Score";
+}
+
+<h2>Safety Score for Your Neighborhood</h2>
+
+<div style="border: 1px solid #ccc; border-radius: 8px; padding: 20px; max-width: 600px; margin: auto;">
+    <h3>Neighborhood Safety Overview</h3>
+
+    <div style="display: flex; align-items: center; justify-content: space-between; padding: 10px; background-color: #f8f8f8; border-radius: 6px;">
+        <div style="font-size: 24px; font-weight: bold; color: #4CAF50;">
+            75
+        </div>
+        <div style="flex: 1; padding-left: 15px;">
+            <p style="margin: 0; font-weight: bold;">Safety Score</p>
+            <p style="margin: 0; font-size: 14px; color: #666;">This score reflects the current safety level based on recent crime data and trends.</p>
+        </div>
+    </div>
+
+    <hr style="margin: 20px 0;">
+
+    <h4>Crime Breakdown</h4>
+    <ul style="list-style: none; padding: 0;">
+        <li style="padding: 8px 0; display: flex; justify-content: space-between; border-bottom: 1px solid #e0e0e0;">
+            <span>Assaults:</span>
+            <span>15 incidents</span>
+        </li>
+        <li style="padding: 8px 0; display: flex; justify-content: space-between; border-bottom: 1px solid #e0e0e0;">
+            <span>Thefts:</span>
+            <span>30 incidents</span>
+        </li>
+        <li style="padding: 8px 0; display: flex; justify-content: space-between; border-bottom: 1px solid #e0e0e0;">
+            <span>Burglaries:</span>
+            <span>8 incidents</span>
+        </li>
+        <li style="padding: 8px 0; display: flex; justify-content: space-between;">
+            <span>Other Crimes:</span>
+            <span>12 incidents</span>
+        </li>
+    </ul>
+
+    <hr style="margin: 20px 0;">
+
+    <h4>Recent Trend</h4>
+    <p style="color: #666; font-size: 14px;">Crime rate has decreased by 5% in the last month.</p>
+</div>
