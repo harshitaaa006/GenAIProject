@@ -1,0 +1,65 @@
+﻿@page
+@model SafeStreet.Pages.mapModel
+@{
+}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Safestreet Map</title>
+    <meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no">
+    <script src="https://api.mapbox.com/mapbox-gl-js/v2.10.0/mapbox-gl.js"></script>
+    <link href="https://api.mapbox.com/mapbox-gl-js/v2.10.0/mapbox-gl.css" rel="stylesheet" />
+    <script src="https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v4.7.0/mapbox-gl-geocoder.min.js"></script>
+    <link rel="stylesheet" href="https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v4.7.0/mapbox-gl-geocoder.css" type="text/css" />
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+        }
+
+        #map {
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            width: 100%;
+            height: 100%;
+        }
+
+        .geocoder {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            z-index: 1;
+        }
+    </style>
+    <script>
+        mapboxgl.accessToken = 'pk.eyJ1IjoiY2hlbjRjZyIsImEiOiJjbTNnM3d4ZWYwMGk3MmxxY2ExN2g2ZWViIn0.dos5ickwq46XxLmUly0-_w';
+
+        function loadMap() {
+            var map = new mapboxgl.Map({
+                container: 'map',
+                style: 'mapbox://styles/mapbox/streets-v11',
+                center: [-84.31, 39.06], // Longitude, Latitude (example: Cincinnati)
+                zoom: 10
+            });
+
+            // Add search functionality
+            var geocoder = new MapboxGeocoder({
+                accessToken: mapboxgl.accessToken,
+                mapboxgl: mapboxgl
+            });
+
+            // Add geocoder to the map
+            document.getElementById('geocoder').appendChild(geocoder.onAdd(map));
+        }
+    </script>
+</head>
+<body onload="loadMap()">
+    <div id="map"></div>
+    <!-- Search box -->
+    <div id="geocoder" class="geocoder"></div>
+</body>
+</html>
+
