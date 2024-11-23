@@ -2,16 +2,18 @@
 //
 // To parse this JSON data, add NuGet 'Newtonsoft.Json' then do:
 //
-//    using CincinnatiCrime;
+//    using SafeStreet;
 //
 //    var crime = Crime.FromJson(jsonString);
 
-namespace CincinnatiCrime
+namespace SafeStreet
 {
     using System;
     using System.Collections.Generic;
 
     using System.Globalization;
+    using System.Text.Json.Serialization;
+    using System.Text.Json;
     using Newtonsoft.Json;
     using Newtonsoft.Json.Converters;
 
@@ -21,7 +23,8 @@ namespace CincinnatiCrime
         public string Instanceid { get; set; }
 
         [JsonProperty("incident_no")]
-        public string IncidentNo { get; set; }
+        [Newtonsoft.Json.JsonConverter(typeof(ParseStringConverter))]
+        public object IncidentNo { get; set; }
 
         [JsonProperty("date_reported")]
         public DateTimeOffset DateReported { get; set; }
@@ -36,13 +39,16 @@ namespace CincinnatiCrime
         public string Clsd { get; set; }
 
         [JsonProperty("ucr")]
-        public string Ucr { get; set; }
+        [Newtonsoft.Json.JsonConverter(typeof(ParseStringConverter))]
+        public long Ucr { get; set; }
 
         [JsonProperty("dst")]
-        public string Dst { get; set; }
+        [Newtonsoft.Json.JsonConverter(typeof(ParseStringConverter))]
+        public object Dst { get; set; }
 
         [JsonProperty("beat")]
-        public String Beat { get; set; }
+        [Newtonsoft.Json.JsonConverter(typeof(ParseStringConverter))]
+        public object Beat { get; set; }
 
         [JsonProperty("offense")]
         public string Offense { get; set; }
@@ -57,7 +63,8 @@ namespace CincinnatiCrime
         public string Dayofweek { get; set; }
 
         [JsonProperty("rpt_area")]
-        public String RptArea { get; set; }
+        [Newtonsoft.Json.JsonConverter(typeof(ParseStringConverter))]
+        public object RptArea { get; set; }
 
         [JsonProperty("cpd_neighborhood")]
         public string CpdNeighborhood { get; set; }
@@ -69,25 +76,26 @@ namespace CincinnatiCrime
         public DateTimeOffset DateOfClearance { get; set; }
 
         [JsonProperty("hour_from")]
-        public String HourFrom { get; set; }
+        [Newtonsoft.Json.JsonConverter(typeof(ParseStringConverter))]
+        public long HourFrom { get; set; }
 
         [JsonProperty("hour_to")]
-        [JsonConverter(typeof(ParseStringConverter))]
+        [Newtonsoft.Json.JsonConverter(typeof(ParseStringConverter))]
         public long HourTo { get; set; }
 
-        [JsonProperty("address_x", NullValueHandling = NullValueHandling.Ignore)]
+        [JsonProperty("address_x")]
         public string AddressX { get; set; }
 
-        [JsonProperty("longitude_x", NullValueHandling = NullValueHandling.Ignore)]
+        [JsonProperty("longitude_x")]
         public string LongitudeX { get; set; }
 
-        [JsonProperty("latitude_x", NullValueHandling = NullValueHandling.Ignore)]
+        [JsonProperty("latitude_x")]
         public string LatitudeX { get; set; }
 
         [JsonProperty("victim_age")]
         public string VictimAge { get; set; }
 
-        [JsonProperty("victim_gender", NullValueHandling = NullValueHandling.Ignore)]
+        [JsonProperty("victim_gender")]
         public string VictimGender { get; set; }
 
         [JsonProperty("suspect_age")]
@@ -97,7 +105,8 @@ namespace CincinnatiCrime
         public string UcrGroup { get; set; }
 
         [JsonProperty("zip")]
-        public string Zip { get; set; }
+        [Newtonsoft.Json.JsonConverter(typeof(ParseStringConverter))]
+        public long Zip { get; set; }
 
         [JsonProperty("community_council_neighborhood")]
         public string CommunityCouncilNeighborhood { get; set; }
@@ -105,18 +114,37 @@ namespace CincinnatiCrime
         [JsonProperty("sna_neighborhood")]
         public string SnaNeighborhood { get; set; }
 
-        [JsonProperty("suspect_gender", NullValueHandling = NullValueHandling.Ignore)]
-        public string SuspectGender { get; set; }
+        // Helper method to get IncidentNo as a string
+        public string GetIncidentNoAsString()
+        {
+            return IncidentNo?.ToString();
+        }
+
+        // Helper method to get Dst as a string
+        public string GetDstAsString()
+        {
+            return Dst?.ToString();
+        }
+
+        // Helper method to get Beat as a string
+        public string GetBeatAsString()
+        {
+            return Beat?.ToString();
+        }
+        public string GetRptAreaAsString()
+        {
+            return RptArea?.ToString();
+        }
     }
 
     public partial class Crime
     {
-        public static List<Crime> FromJson(string json) => JsonConvert.DeserializeObject<List<Crime>>(json, CincinnatiCrime.Converter.Settings);
+        public static List<Crime> FromJson(string json) => JsonConvert.DeserializeObject<List<Crime>>(json, SafeStreet.Converter.Settings);
     }
 
     public static class Serialize
     {
-        public static string ToJson(this List<Crime> self) => JsonConvert.SerializeObject(self, CincinnatiCrime.Converter.Settings);
+        public static string ToJson(this List<Crime> self) => JsonConvert.SerializeObject(self, SafeStreet.Converter.Settings);
     }
 
     internal static class Converter
@@ -132,49 +160,56 @@ namespace CincinnatiCrime
         };
     }
 
-    internal class ParseStringConverter : JsonConverter
+    internal class ParseStringConverter : Newtonsoft.Json.JsonConverter
     {
-        public override bool CanConvert(Type t) => t == typeof(long) || t == typeof(long?);
+        public override bool CanConvert(Type t) => t == typeof(long) || t == typeof(long?) || t == typeof(object);
 
-        public override object ReadJson(JsonReader reader, Type t, object existingValue, JsonSerializer serializer)
+        public override object ReadJson(JsonReader reader, Type t, object existingValue, Newtonsoft.Json.JsonSerializer serializer)
         {
             // Handle null values directly
             if (reader.TokenType == JsonToken.Null)
-            {
-                return t == typeof(long?) ? (long?)null : 0; // Return null for nullable long, otherwise 0
-            }
+                return null;
 
             // Handle integer tokens directly
             if (reader.TokenType == JsonToken.Integer)
             {
-                return Convert.ToInt64(reader.Value); // Directly return the number as long
+                // If it's an integer, return it as a long
+                return (long)reader.Value;
             }
 
             // Attempt to parse as a string if it’s a string token
             if (reader.TokenType == JsonToken.String)
             {
-                var value = serializer.Deserialize<string>(reader);
-                if (Int64.TryParse(value, out long l))
+                // If it's a string, attempt to parse it as a long
+                var value = (string)reader.Value;
+                if (long.TryParse(value, out long l))
                 {
                     return l;
                 }
+                // If parsing fails, return the original string as a fallback
+                return value;
             }
 
-            // Log unexpected token type or value for debugging
-            throw new Exception($"Cannot unmarshal type long. Unexpected token: {reader.TokenType}, Value: {reader.Value}");
+            // Fallback in case the token type is unexpected
+            throw new Exception("Cannot unmarshal type long");
         }
 
-
-        public override void WriteJson(JsonWriter writer, object untypedValue, JsonSerializer serializer)
+        public override void WriteJson(JsonWriter writer, object untypedValue, Newtonsoft.Json.JsonSerializer serializer)
         {
             if (untypedValue == null)
             {
                 serializer.Serialize(writer, null);
                 return;
             }
-            var value = (long)untypedValue;
-            serializer.Serialize(writer, value.ToString());
-            return;
+
+            if (untypedValue is long || untypedValue is int)
+            {
+                writer.WriteValue((long)untypedValue);
+            }
+            else
+            {
+                writer.WriteValue(untypedValue.ToString());
+            }
         }
 
         public static readonly ParseStringConverter Singleton = new ParseStringConverter();
