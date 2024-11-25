@@ -1,8 +1,7 @@
 ﻿@page
 @model SafeStreet.Pages.IndexModel
 @{
-    ViewData["Title"] = "Home page";
-    List<Crime> crimes = ViewData["crimes"] as List<Crime> ?? new List<Crime>();
+
     var brand = ViewData["Brand"] ?? "Crime Data";
     ViewData["Title"] = brand;
 
@@ -11,44 +10,7 @@
     var offensesByNeighborhood = ViewData["OffensesByNeighborhood"] as Dictionary<string, List<string>> ?? new Dictionary<string, List<string>>();
     var query = ViewData["Query"] as string ?? string.Empty;
 }
-    //
 
-<div class="text-center">
-    <h2>Total Crimes Reported:</h2>
-    <p>In the Last Month: @Model.CrimeCountLastMonth</p>
-    <p>In the Last 6 Months: @Model.CrimeCountLastSixMonths</p>
-    <p>In the Last Year: @Model.CrimeCountLastYear</p>
-    <p>In the Last 2 Years: @Model.CrimeCountLastTwoYears</p>
-
-    <form method="get">
-        <div>
-            <label>Latitude:</label>
-            <input type="text" name="latitude" />
-        </div>
-        <div>
-            <label>Longitude:</label>
-            <input type="text" name="longitude" />
-        </div>
-        <button type="submit">Get Nearby Crimes</button>
-    </form>
-
-
-    @if (Model.NearbyCrimeCountLastTwoYears > 0)
-    {
-        <h2>Total Nearby Crimes Reported:</h2>
-        <p>In the Last Month: @Model.NearbyCrimeCountLastMonth</p>
-        <p>In the Last 6 Months: @Model.NearbyCrimeCountLastSixMonths</p>
-        <p>In the Last Year: @Model.NearbyCrimeCountLastYear</p>
-        <p>In the Last 2 Years: @Model.NearbyCrimeCountLastTwoYears</p>
-    }
-    else
-    {
-    <h2>Total Nearby Crimes Reported:</h2>
-    <p>In the Last Month: 0</p>
-    <p>In the Last 6 Months: 0</p>
-    <p>In the Last Year: 0</p>
-    <p>In the Last 2 Years: 0</p>
-    }
     <h1>@brand - Neighborhoods</h1>
     <form method="get">
         <label for="query">Search for Crime Data by Neeighborhood or Offense:</label>

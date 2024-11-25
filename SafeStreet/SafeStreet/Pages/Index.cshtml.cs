@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Newtonsoft.Json.Linq;
+using Newtonsoft.Json.Schema;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,140 +12,78 @@ namespace SafeStreet.Pages
     public class IndexModel : PageModel
     {
         private readonly ILogger<IndexModel> _logger;
-        HttpClient _httpClient = new HttpClient();
 
         static readonly HttpClient client = new HttpClient();
-
         public IndexModel(ILogger<IndexModel> logger)
         {
             _logger = logger;
         }
-
-        public List<Crime> Crimes { get; set; } = new List<Crime>();
-        public int CrimeCountLastMonth { get; set; }
-        public int CrimeCountLastSixMonths { get; set; }
-        public int CrimeCountLastYear { get; set; }
-        public int CrimeCountLastTwoYears { get; set; }
-        public int NearbyCrimeCountLastMonth { get; set; }
-        public int NearbyCrimeCountLastSixMonths { get; set; }
-        public int NearbyCrimeCountLastYear { get; set; }
-        public int NearbyCrimeCountLastTwoYears { get; set; }
-
-        public async Task OnGetAsync(double? latitude, double? longitude)
+        public void OnGet(string query)
         {
-            try
+            string brand = "Cincinnati Crime";
+            string inBrand = Request.Query["Brand"];
+            if (inBrand != null && inBrand.Length > 0)
             {
-                int limit = 1000;
-                int offset = 0;
-                bool moreData = true;
-
-                DateTime twoYearsAgo = DateTime.Now.AddYears(-2);
-
-                // Fetch crimes from the API within the past 2 years using pagination
-                while (moreData)
+                brand = inBrand;
+            }
+            ViewData["Brand"] = brand;
+            var task = client.GetAsync("https://data.cincinnati-oh.gov/resource/k59e-2pvf.json");
+            HttpResponseMessage result = task.Result;
+            List<Crime> crimes = new List<Crime>();
+            if (result.IsSuccessStatusCode)
+            {
+                Task<string> readString = result.Content.ReadAsStringAsync();
+                string jsonString = readString.Result;
+                JSchema schema = JSchema.Parse(System.IO.File.ReadAllText("crime-schema.json"));
+                JArray jsonArray = JArray.Parse(jsonString);
+                IList<string> crimeEvents = new List<string>();
+                if (jsonArray.IsValid(schema, out crimeEvents))
                 {
-                    string url = $"https://data.cincinnati-oh.gov/resource/k59e-2pvf.json?$limit={limit}&$offset={offset}&$where=date_reported >= '{twoYearsAgo:yyyy-MM-ddT00:00:00}'";
-                    HttpResponseMessage response = await _httpClient.GetAsync(url);
-
-                    if (response.IsSuccessStatusCode)
+                    crimes = Crime.FromJson(jsonString);
+                }
+                else
+                {
+                    foreach (string evt in crimeEvents)
                     {
-                        string crimeJson = await response.Content.ReadAsStringAsync();
-                        var crimesBatch = Crime.FromJson(crimeJson);
-
-                        if (crimesBatch != null && crimesBatch.Any())
+                        Console.WriteLine(evt);
+                    }
+                    {
+                        if (result.IsSuccessStatusCode)
                         {
-                            Crimes.AddRange(crimesBatch);
-                            offset += limit;
 
-                            // Log success for each iteration of the loop
-                            _logger.LogInformation($"Successfully fetched {crimesBatch.Count} records, current total: {Crimes.Count}, offset: {offset}");
+                            var offenseByNeighborhood = jsonArray
+                         .Where(item => item["cpd_neighborhood"] != null && item["offense"] != null)
+                         .GroupBy(
+                            item => item["cpd_neighborhood"]?.ToString() ?? "Unknown Neighborhood",
+                            item => item["offense"]?.ToString() ?? "Unknown Offense"
+                 )
+                          //Chatgpt help:
+                          .ToDictionary(
+                            group => group.Key,
+                            group => group.Distinct().ToList()
+                        );
+                            if (!string.IsNullOrEmpty(query))
+                            {
+                                offenseByNeighborhood = offenseByNeighborhood
+                                    .Where(kvp =>
+                                            kvp.Key.Contains(query, StringComparison.OrdinalIgnoreCase) || // Check neighborhood
+                                            kvp.Value.Any(offense => offense.Contains(query, StringComparison.OrdinalIgnoreCase)) // Check offenses
+                    )
+                                    .ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
+                            }
+                            //
+
+                            ViewData["OffensesByNeighborhood"] = offenseByNeighborhood;
                         }
                         else
                         {
-                            moreData = false; // No more data to fetch
-                            _logger.LogInformation("No more data to fetch, stopping the loop.");
+                            ViewData["Query"] = query;
                         }
                     }
-                    else
-                    {
-                        _logger.LogError($"Failed to fetch data: {response.StatusCode}");
-                        moreData = false; // Stop if an error occurs
-                    }
+
                 }
 
-                
-                if (latitude.HasValue && longitude.HasValue)
-                {
-                   const double SEARCH_RADIUS = 1.0; 
-
-                    // Filter crimes reported in the past time periods and within the radius
-                    DateTime now = DateTime.Now;
-                    NearbyCrimeCountLastMonth = Crimes
-                        .Where(crime => crime.DateReported >= now.AddMonths(-1) && IsWithinRadius(latitude.Value, longitude.Value, crime.LatitudeX, crime.LongitudeX, SEARCH_RADIUS))
-                        .Count();
-
-                    NearbyCrimeCountLastSixMonths = Crimes
-                        .Where(crime => crime.DateReported >= now.AddMonths(-6) && IsWithinRadius(latitude.Value, longitude.Value, crime.LatitudeX, crime.LongitudeX,SEARCH_RADIUS ))
-                        .Count();
-
-                    NearbyCrimeCountLastYear = Crimes
-                        .Where(crime => crime.DateReported >= now.AddYears(-1) && IsWithinRadius(latitude.Value, longitude.Value, crime.LatitudeX, crime.LongitudeX,SEARCH_RADIUS ))
-                        .Count();
-
-                    NearbyCrimeCountLastTwoYears = Crimes
-                        .Where(crime => crime.DateReported >= now.AddYears(-2) && IsWithinRadius(latitude.Value, longitude.Value, crime.LatitudeX, crime.LongitudeX, SEARCH_RADIUS))
-                        .Count();
-                }
-
-                // Calculate the counts for different time periods
-                DateTime currentTime = DateTime.Now;
-                CrimeCountLastMonth = Crimes.Count(crime => crime.DateReported >= currentTime.AddMonths(-1));
-                CrimeCountLastSixMonths = Crimes.Count(crime => crime.DateReported >= currentTime.AddMonths(-6));
-                CrimeCountLastYear = Crimes.Count(crime => crime.DateReported >= currentTime.AddYears(-1));
-                CrimeCountLastTwoYears = Crimes.Count(crime => crime.DateReported >= currentTime.AddYears(-2));
-
-                // Pass crimes to the Razor page through ViewData, if needed
-                ViewData["crimes"] = Crimes;
-
-                // Log the final success of fetching all data
-                _logger.LogInformation($"Successfully completed fetching data. Total records fetched: {Crimes.Count}");
             }
-            catch (Exception ex)
-            {
-                _logger.LogError($"An error occurred while fetching or processing data: {ex.Message}");
-            }
-        }
-
-        // Helper method to determine if a crime is within the specified radius
-       
-        private bool IsWithinRadius(double userLat, double userLon, string crimeLatStr, string crimeLonStr, double radiusKm)
-        {
-            if (double.TryParse(crimeLatStr, out double crimeLat) && double.TryParse(crimeLonStr, out double crimeLon))
-            {
-                double distance = CalculateDistance(userLat, userLon, crimeLat, crimeLon);
-                return distance <= radiusKm;
-            }
-            return false;
-        }
-
-        // Haversine formula to calculate the distance between two coordinates in kilometers
-        
-        private double CalculateDistance(double lat1, double lon1, double lat2, double lon2)
-        {
-            const double EarthRadiusKm = 6371; 
-            double dLat = ToRadians(lat2 - lat1);
-            double dLon = ToRadians(lon2 - lon1);
-            double a =
-                Math.Sin(dLat / 2) * Math.Sin(dLat / 2) +
-                Math.Cos(ToRadians(lat1)) * Math.Cos(ToRadians(lat2)) *
-                Math.Sin(dLon / 2) * Math.Sin(dLon / 2);
-            double c = 2 * Math.Atan2(Math.Sqrt(a), Math.Sqrt(1 - a));
-            return EarthRadiusKm * c; // Distance in km
-        }
-
-        private double ToRadians(double deg)
-        {
-            return deg * (Math.PI / 180);
         }
     }
 }
