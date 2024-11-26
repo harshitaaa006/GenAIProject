@@ -1,0 +1,46 @@
+﻿@page
+@model SafeStreet.Pages.UserRatings.DeleteModel
+
+@{
+    ViewData["Title"] = "Delete";
+}
+
+<h1>Delete</h1>
+
+<h3>Are you sure you want to delete this?</h3>
+<div>
+    <h4>UserRating</h4>
+    <hr />
+    <dl class="row">
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.UserRating.Neighborhood)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.UserRating.Neighborhood)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.UserRating.SafetyRating)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.UserRating.SafetyRating)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.UserRating.Description)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.UserRating.Description)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.UserRating.SubmittedOn)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.UserRating.SubmittedOn)
+        </dd>
+    </dl>
+    
+    <form method="post">
+        <input type="hidden" asp-for="UserRating.Id" />
+        <input type="submit" value="Delete" class="btn btn-danger" /> |
+        <a asp-page="./Index">Back to List</a>
+    </form>
+</div>
