@@ -30,11 +30,11 @@ app.UseAuthorization();
 
 app.MapRazorPages();
 
-app.MapFallbackToPage("/Search");
+app.MapFallbackToPage("/CrimeMap");
 
 app.MapControllerRoute(
     name: "defalut",
-    pattern: "{Controller=Home}/{action=Index}/{id?}");
+    pattern: "{Controller=Home}/{action=CrimeMap}/{id?}");
 
     
 

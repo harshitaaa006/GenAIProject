@@ -26,3 +26,30 @@ html {
 body {
   margin-bottom: 60px;
 }
+h1, h2, h3 {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.navbar {
+    border-bottom: 1px solid #ddd;
+}
+
+.footer {
+    text-align: center;
+    font-size: 0.9rem;
+    color: #6c757d;
+}
+
+.form-control, .form-select {
+    border-radius: 0.25rem;
+}
+
+.btn-primary {
+    background-color: #007bff;
+    border-color: #007bff;
+}
+
+    .btn-primary:hover {
+        background-color: #0056b3;
+        border-color: #004085;
+    }
