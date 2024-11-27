@@ -1,5 +1,8 @@
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json.Linq;
+using SafeStreet.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,140 +14,122 @@ namespace SafeStreet.Pages
     public class TestModel : PageModel
     {
         private readonly ILogger<TestModel> _logger;
-        HttpClient _httpClient = new HttpClient();
+        private readonly IConfiguration _configuration;
+        private readonly HttpClient _httpClient;
 
-        static readonly HttpClient client = new HttpClient();
+        public string GoogleMapApiKey { get; private set; }
+        public List<Crime> Crimes { get; set; } = new List<Crime>();
 
-        public TestModel(ILogger<TestModel> logger)
+        public TestModel(ILogger<TestModel> logger, IConfiguration configuration)
         {
             _logger = logger;
+            _configuration = configuration;
+            _httpClient = new HttpClient();
         }
 
-        public List<Crime> Crimes { get; set; } = new List<Crime>();
-        public int CrimeCountLastMonth { get; set; }
-        public int CrimeCountLastSixMonths { get; set; }
-        public int CrimeCountLastYear { get; set; }
-        public int CrimeCountLastTwoYears { get; set; }
-        public int NearbyCrimeCountLastMonth { get; set; }
-        public int NearbyCrimeCountLastSixMonths { get; set; }
-        public int NearbyCrimeCountLastYear { get; set; }
-        public int NearbyCrimeCountLastTwoYears { get; set; }
+        public void OnGet()
+        {
+            // Fetch Google Maps API key from configuration
+            GoogleMapApiKey = _configuration["GoogleMapApiKey"];
+        }
 
-        public async Task OnGetAsync(double? latitude, double? longitude)
+        [HttpGet]
+        public async Task<IActionResult> OnGetCrimeStatsNearbyAsync(double latitude, double longitude)
         {
             try
             {
-                int limit = 1000;
-                int offset = 0;
-                bool moreData = true;
+                DateTime oneYearAgo = DateTime.UtcNow.AddYears(-1);
 
-                DateTime twoYearsAgo = DateTime.Now.AddYears(-2);
-
-                // Fetch crimes from the API within the past 2 years using pagination
-                while (moreData)
+                // Fetch crimes from the API if not already loaded
+                if (Crimes == null || !Crimes.Any())
                 {
-                    string url = $"https://data.cincinnati-oh.gov/resource/k59e-2pvf.json?$limit={limit}&$offset={offset}&$where=date_reported >= '{twoYearsAgo:yyyy-MM-ddT00:00:00}'";
-                    HttpResponseMessage response = await _httpClient.GetAsync(url);
-
-                    if (response.IsSuccessStatusCode)
-                    {
-                        string crimeJson = await response.Content.ReadAsStringAsync();
-                        var crimesBatch = Crime.FromJson(crimeJson);
-
-                        if (crimesBatch != null && crimesBatch.Any())
-                        {
-                            Crimes.AddRange(crimesBatch);
-                            offset += limit;
-
-                            // Log success for each iteration of the loop
-                            _logger.LogInformation($"Successfully fetched {crimesBatch.Count} records, current total: {Crimes.Count}, offset: {offset}");
-                        }
-                        else
-                        {
-                            moreData = false; // No more data to fetch
-                            _logger.LogInformation("No more data to fetch, stopping the loop.");
-                        }
-                    }
-                    else
-                    {
-                        _logger.LogError($"Failed to fetch data: {response.StatusCode}");
-                        moreData = false; // Stop if an error occurs
-                    }
+                    Crimes = await FetchCrimesFromApi(oneYearAgo);
                 }
 
+                const double SEARCH_RADIUS_KM = 1.0; // 1 km radius
+                DateTime now = DateTime.UtcNow;
 
-                if (latitude.HasValue && longitude.HasValue)
+                // Calculate nearby crimes within the radius
+                var nearbyCrimes = Crimes.Where(c =>
+                    double.TryParse(c.LatitudeX, out var lat) &&
+                    double.TryParse(c.LongitudeX, out var lng) &&
+                    CalculateDistance(latitude, longitude, lat, lng) <= SEARCH_RADIUS_KM
+                );
+
+                // Summarize crime statistics
+                var stats = new
                 {
-                    const double SEARCH_RADIUS = 1.0;
+                    Last1Month = nearbyCrimes.Count(c => (now - c.DateReported).TotalDays <= 30),
+                    Last3Months = nearbyCrimes.Count(c => (now - c.DateReported).TotalDays <= 90),
+                    Last6Months = nearbyCrimes.Count(c => (now - c.DateReported).TotalDays <= 180),
+                    Last1Year = nearbyCrimes.Count(c => (now - c.DateReported).TotalDays <= 365)
+                };
 
-                    // Filter crimes reported in the past time periods and within the radius
-                    DateTime now = DateTime.Now;
-                    NearbyCrimeCountLastMonth = Crimes
-                        .Where(crime => crime.DateReported >= now.AddMonths(-1) && IsWithinRadius(latitude.Value, longitude.Value, crime.LatitudeX, crime.LongitudeX, SEARCH_RADIUS))
-                        .Count();
-
-                    NearbyCrimeCountLastSixMonths = Crimes
-                        .Where(crime => crime.DateReported >= now.AddMonths(-6) && IsWithinRadius(latitude.Value, longitude.Value, crime.LatitudeX, crime.LongitudeX, SEARCH_RADIUS))
-                        .Count();
-
-                    NearbyCrimeCountLastYear = Crimes
-                        .Where(crime => crime.DateReported >= now.AddYears(-1) && IsWithinRadius(latitude.Value, longitude.Value, crime.LatitudeX, crime.LongitudeX, SEARCH_RADIUS))
-                        .Count();
-
-                    NearbyCrimeCountLastTwoYears = Crimes
-                        .Where(crime => crime.DateReported >= now.AddYears(-2) && IsWithinRadius(latitude.Value, longitude.Value, crime.LatitudeX, crime.LongitudeX, SEARCH_RADIUS))
-                        .Count();
-                }
-
-                // Calculate the counts for different time periods
-                DateTime currentTime = DateTime.Now;
-                CrimeCountLastMonth = Crimes.Count(crime => crime.DateReported >= currentTime.AddMonths(-1));
-                CrimeCountLastSixMonths = Crimes.Count(crime => crime.DateReported >= currentTime.AddMonths(-6));
-                CrimeCountLastYear = Crimes.Count(crime => crime.DateReported >= currentTime.AddYears(-1));
-                CrimeCountLastTwoYears = Crimes.Count(crime => crime.DateReported >= currentTime.AddYears(-2));
-
-                // Pass crimes to the Razor page through ViewData, if needed
-                ViewData["crimes"] = Crimes;
-
-                // Log the final success of fetching all data
-                _logger.LogInformation($"Successfully completed fetching data. Total records fetched: {Crimes.Count}");
+                _logger.LogInformation($"Stats: {System.Text.Json.JsonSerializer.Serialize(stats)}");
+                return new JsonResult(stats);
             }
             catch (Exception ex)
             {
-                _logger.LogError($"An error occurred while fetching or processing data: {ex.Message}");
+                _logger.LogError($"Error fetching or processing nearby crime stats: {ex.Message}");
+                return BadRequest("Error processing request.");
             }
         }
 
-        // Helper method to determine if a crime is within the specified radius
-
-        private bool IsWithinRadius(double userLat, double userLon, string crimeLatStr, string crimeLonStr, double radiusKm)
+        private async Task<List<Crime>> FetchCrimesFromApi(DateTime since)
         {
-            if (double.TryParse(crimeLatStr, out double crimeLat) && double.TryParse(crimeLonStr, out double crimeLon))
-            {
-                double distance = CalculateDistance(userLat, userLon, crimeLat, crimeLon);
-                return distance <= radiusKm;
-            }
-            return false;
-        }
+            var crimes = new List<Crime>();
+            int limit = 1000;
+            int offset = 0;
+            bool moreData = true;
 
-        // Haversine formula to calculate the distance between two coordinates in kilometers
+            while (moreData)
+            {
+                string url = $"https://data.cincinnati-oh.gov/resource/k59e-2pvf.json?$limit={limit}&$offset={offset}&$where=date_reported >= '{since:yyyy-MM-ddT00:00:00}'";
+                HttpResponseMessage response = await _httpClient.GetAsync(url);
+
+                if (response.IsSuccessStatusCode)
+                {
+                    string crimeJson = await response.Content.ReadAsStringAsync();
+                    var crimesBatch = Crime.FromJson(crimeJson);
+
+                    if (crimesBatch != null && crimesBatch.Any())
+                    {
+                        crimes.AddRange(crimesBatch);
+                        offset += limit;
+                        _logger.LogInformation($"Fetched {crimesBatch.Count} records. Total so far: {crimes.Count}");
+                    }
+                    else
+                    {
+                        moreData = false; // No more data available
+                    }
+                }
+                else
+                {
+                    _logger.LogError($"Failed to fetch crimes: {response.StatusCode}");
+                    moreData = false;
+                }
+            }
+
+            return crimes;
+        }
 
         private double CalculateDistance(double lat1, double lon1, double lat2, double lon2)
         {
-            const double EarthRadiusKm = 6371;
+            const double EarthRadiusKm = 6371.0;
             double dLat = ToRadians(lat2 - lat1);
             double dLon = ToRadians(lon2 - lon1);
-            double a =
-                Math.Sin(dLat / 2) * Math.Sin(dLat / 2) +
-                Math.Cos(ToRadians(lat1)) * Math.Cos(ToRadians(lat2)) *
-                Math.Sin(dLon / 2) * Math.Sin(dLon / 2);
+
+            double a = Math.Sin(dLat / 2) * Math.Sin(dLat / 2) +
+                       Math.Cos(ToRadians(lat1)) * Math.Cos(ToRadians(lat2)) *
+                       Math.Sin(dLon / 2) * Math.Sin(dLon / 2);
+
             double c = 2 * Math.Atan2(Math.Sqrt(a), Math.Sqrt(1 - a));
-            return EarthRadiusKm * c; // Distance in km
+            return EarthRadiusKm * c;
         }
 
-        private double ToRadians(double deg)
+        private double ToRadians(double degrees)
         {
-            return deg * (Math.PI / 180);
+            return degrees * Math.PI / 180.0;
         }
     }
 }
