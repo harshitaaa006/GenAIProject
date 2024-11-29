@@ -15,14 +15,32 @@
 <!-- Statistics Section -->
 <div id="statistics">
     <h2>Crime Statistics (Nearby - 1 km Radius)</h2>
-    <p><strong>Last 1 Month:</strong> <span id="last1Month">-</span></p>
-    <p><strong>Last 3 Months:</strong> <span id="last3Months">-</span></p>
-    <p><strong>Last 6 Months:</strong> <span id="last6Months">-</span></p>
-    <p><strong>Last 1 Year:</strong> <span id="last1Year">-</span></p>
+    <p><strong>Last 3 Month:</strong> <span id="totalLast3Months">-</span></p>
+    <p><strong>Last 6 Months:</strong> <span id="totalLast6Months">-</span></p>
+    <p><strong>Last 9 Months:</strong> <span id="totalLast9Months">-</span></p>
+    <p><strong>Last 1 Year:</strong> <span id="totalLast1Year">-</span></p>
+
+    <h3>Crime Numbers Aggregated by Type</h3>
+    <table id="typeStatsTable" border="1" style="width: 100%; text-align: left; border-collapse: collapse;">
+        <thead>
+            <tr>
+                <th>Incidents</th>
+                <th>Last 3 Months</th>
+                <th>Last 6 Months</th>
+                <th>Last 9 Months</th>
+                <th>Last 1 Year</th>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- Rows will be dynamically inserted here -->
+        </tbody>
+    </table>
 </div>
 
+
+
 @section Scripts {
-    <script src="https://maps.googleapis.com/maps/api/js?key=@Model.GoogleMapApiKey&libraries=places&callback=initMap" async defer></script>
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCqP_MugU3SwtJMIOC_fZ562NoWCbklz3Q&libraries=places&callback=initMap" async defer></script>
     <script>
         let map, searchBox, geocoder;
 
@@ -62,6 +80,7 @@
 
                 // Fetch stats for the selected location
                 fetchCrimeStats(latitude, longitude);
+                console.log(latitude, longitude)
             });
 
             // Listen for map click events
@@ -81,15 +100,16 @@
 
                 // Fetch stats for the clicked location
                 fetchCrimeStats(latitude, longitude);
+                console.log(latitude, longitude)
             });
         }
 
         async function fetchCrimeStats(latitude, longitude) {
             try {
-                document.getElementById('last1Month').textContent = "Loading...";
-                document.getElementById('last3Months').textContent = "Loading...";
-                document.getElementById('last6Months').textContent = "Loading...";
-                document.getElementById('last1Year').textContent = "Loading...";
+                document.getElementById('totalLast3Months').textContent = "Loading...";
+                document.getElementById('totalLast6Months').textContent = "Loading...";
+                document.getElementById('totalLast9Months').textContent = "Loading...";
+                document.getElementById('totalLast1Year').textContent = "Loading...";
 
                 const response = await fetch(`/Test?handler=CrimeStatsNearby&latitude=${latitude}&longitude=${longitude}`);
                 if (!response.ok) {
@@ -99,12 +119,31 @@
 
                 const stats = await response.json();
                 console.log("stats: ", stats)
-
+                
                 // Update the statistics in the UI
-                document.getElementById('last1Month').textContent = stats.last1Month;
-                document.getElementById('last3Months').textContent = stats.last3Months;
-                document.getElementById('last6Months').textContent = stats.last6Months;
-                document.getElementById('last1Year').textContent = stats.last1Year;
+                const totalStats = stats.totalCrimeStats;
+                console.log(totalStats)
+                document.getElementById('totalLast3Months').textContent = totalStats.last3Months;
+                document.getElementById('totalLast6Months').textContent = totalStats.last6Months;
+                document.getElementById('totalLast9Months').textContent = totalStats.last9Months;
+                document.getElementById('totalLast1Year').textContent = totalStats.last1Year;
+
+                // Update crime numbers by type
+                const typeStats = stats.crimeTypeStats;
+                const tableBody = document.getElementById('typeStatsTable').querySelector('tbody');
+                tableBody.innerHTML = ""; // Clear existing rows
+
+                typeStats.forEach(typeStat => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${typeStat.type}</td>
+                        <td>${typeStat.last3Months}</td>
+                        <td>${typeStat.last6Months}</td>
+                        <td>${typeStat.last9Months}</td>
+                        <td>${typeStat.last1Year}</td>
+                    `;
+                    tableBody.appendChild(row);
+                });
             } catch (error) {
                 console.error("Error fetching crime stats:", error);
             }
@@ -146,5 +185,24 @@
             #statistics p {
                 font-size: 16px;
             }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th, td {
+            border: 1px solid #ccc;
+            padding: 8px;
+            text-align: left;
+        }
+
+        th {
+            background-color: #f4f4f4;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }s
     </style>
 }

@@ -57,12 +57,32 @@ namespace SafeStreet.Pages
                 );
 
                 // Summarize crime statistics
-                var stats = new
+                var totalCrimeStats = new
                 {
-                    Last1Month = nearbyCrimes.Count(c => (now - c.DateReported).TotalDays <= 30),
                     Last3Months = nearbyCrimes.Count(c => (now - c.DateReported).TotalDays <= 90),
                     Last6Months = nearbyCrimes.Count(c => (now - c.DateReported).TotalDays <= 180),
+                    Last9Months = nearbyCrimes.Count(c => (now - c.DateReported).TotalDays <= 270),
                     Last1Year = nearbyCrimes.Count(c => (now - c.DateReported).TotalDays <= 365)
+                };
+
+                // Group crimes by type and calculate counts for each time period
+                var crimeTypeStats = nearbyCrimes
+                    .GroupBy(c => c.Offense)
+                    .Select(g => new
+                    {
+                        Type = g.Key,
+                        Last3Months = g.Count(c => (now - c.DateReported).TotalDays <= 90),
+                        Last6Months = g.Count(c => (now - c.DateReported).TotalDays <= 180),
+                        Last9Months = g.Count(c => (now - c.DateReported).TotalDays <= 270),
+                        Last1Year = g.Count(c => (now - c.DateReported).TotalDays <= 365)
+                    })
+                    .ToList();
+
+                // Prepare the response
+                var stats = new
+                {
+                    TotalCrimeStats = totalCrimeStats,
+                    CrimeTypeStats = crimeTypeStats
                 };
 
                 _logger.LogInformation($"Stats: {System.Text.Json.JsonSerializer.Serialize(stats)}");
