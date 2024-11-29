@@ -27,11 +27,19 @@ namespace SafeStreet.Pages
             _httpClient = new HttpClient();
         }
 
-        public void OnGet()
+        public string SearchNeighborhood { get; private set; } // Property to hold the neighborhood name
+
+        public void OnGet(string neighborhood)
         {
-            // Fetch Google Maps API key from configuration
             GoogleMapApiKey = _configuration["GoogleMapApiKey"];
+
+            // Set the neighborhood name if provided
+            if (!string.IsNullOrEmpty(neighborhood))
+            {
+                SearchNeighborhood = neighborhood;
+            }
         }
+
 
         [HttpGet]
         public async Task<IActionResult> OnGetCrimeStatsNearbyAsync(double latitude, double longitude)
