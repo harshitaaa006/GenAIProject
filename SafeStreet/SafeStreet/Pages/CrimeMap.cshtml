@@ -32,11 +32,18 @@
                 _ => "high-crime"
             };
 
-            <div class="grid-item @className">
+            <div class="grid-item @className" onclick="selectNeighborhood('@neighborhood.Key')">
                 <span>@neighborhood.Key</span>
                 <br />
                 <span>Safety Score: @safetyScore.ToString("F1")</span> <!-- Format score to 1 decimal place -->
             </div>
+            <script>
+                function selectNeighborhood(neighborhood) {
+                    // Redirect to the Test page and pass the neighborhood name as a query parameter
+                    window.location.href = `/Test?neighborhood=${encodeURIComponent(neighborhood)}`;
+                }
+            </script>
+
         }
     </div>
 </div>
