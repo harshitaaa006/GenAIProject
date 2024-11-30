@@ -4,40 +4,66 @@
     ViewData["Title"] = "Crime Data Analysis";
 }
 
-<h1>Crime Data Analysis</h1>
-
 <!-- Map and Search Box -->
 <div id="map-container">
     <input id="search-box" type="text" placeholder="Search for a place..." value="@Model.SearchNeighborhood" />
     <div id="map"></div>
 </div>
 
-<!-- Score Section -->
-<div class="safety-score-card">
-    <h3><i class="fas fa-shield-alt"></i> Neighborhood Safety Score</h3>
-    <div class="circle-score" id="circleScore">
-        <span id="safetyScore">--</span>
+<div class="cards-container">
+    <!-- Score Section -->
+    <div class="card safety-score-card">
+        <h3><i class="fas fa-shield-alt"></i> Neighborhood Safety Score</h3>
+        <div class="circle-score" id="circleScore">
+            <span id="safetyScore">--</span>
+        </div>
+        <div class="score-bar">
+            <div class="score-progress" id="scoreProgress"></div>
+        </div>
+        <div class="score-labels">
+            <span>High Risk</span>
+            <span>Moderate</span>
+            <span>Very Safe</span>
+        </div>
     </div>
-    <div class="score-bar">
-        <div class="score-progress" id="scoreProgress"></div>
+
+    <!-- Total crime Section -->
+    <div class="card crime-total-card">
+        <h2>Total Crime Nearby (1 km)</h2>
+        <table class="crime-total-table">
+            <thead>
+                <tr>
+                    <th>Time Period</th>
+                    <th>Crime Numbers</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Last 3 Months</td>
+                    <td id="totalLast3Months">-</td>
+                </tr>
+                <tr>
+                    <td>Last 6 Months</td>
+                    <td id="totalLast6Months">-</td>
+                </tr>
+                <tr>
+                    <td>Last 9 Months</td>
+                    <td id="totalLast9Months">-</td>
+                </tr>
+                <tr>
+                    <td>Last 1 Year</td>
+                    <td id="totalLast1Year">-</td>
+                </tr>
+            </tbody>
+        </table>
     </div>
-    <div class="score-labels">
-        <span>High Risk</span>
-        <span>Moderate</span>
-        <span>Very Safe</span>
-    </div>
+
 </div>
 
-<!-- Statistics Section -->
-<div id="statistics">
-    <h2>Crime Statistics (Nearby - 1 km Radius)</h2>
-    <p><strong>Last 3 Month:</strong> <span id="totalLast3Months">-</span></p>
-    <p><strong>Last 6 Months:</strong> <span id="totalLast6Months">-</span></p>
-    <p><strong>Last 9 Months:</strong> <span id="totalLast9Months">-</span></p>
-    <p><strong>Last 1 Year:</strong> <span id="totalLast1Year">-</span></p>
-
-    <h3>Crime Numbers Aggregated by Type</h3>
-    <table id="typeStatsTable" border="1" style="width: 100%; text-align: left; border-collapse: collapse;">
+    <!-- Crime Type Section -->
+<div class="crime-type-card">
+    <h3>Crime Type</h3>
+    <table id="typeStatsTable">
         <thead>
             <tr>
                 <th>Incidents</th>
@@ -165,7 +191,7 @@
                 updateSafetyScore(stats.safetyScore);
                 console.log("score2: ", stats.safetyScore)
 
-                // Update the statistics in the UI
+                // Update the Total Crime in the UI
                 const totalStats = stats.totalCrimeStats;
                 console.log(totalStats)
                 document.getElementById('totalLast3Months').textContent = totalStats.last3Months;
@@ -194,113 +220,4 @@
             }
         }
     </script>
-    <style>
-        #map-container {
-            position: relative;
-            width: 100%;
-            height: 500px;
-        }
-
-        #map {
-            width: 100%;
-            height: 100%;
-        }
-
-        #search-box {
-            position: absolute;
-            top: 10px;
-            left: 50%;
-            transform: translateX(-50%);
-            z-index: 5;
-            width: 300px;
-            height: 40px;
-            font-size: 14px;
-            padding: 5px 10px;
-            border: none;
-            outline: none;
-            background: white;
-            border-radius: 5px;
-            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
-        }
-
-        .safety-score-card {
-            border: 1px solid #ddd;
-            border-radius: 10px;
-            padding: 20px;
-            text-align: center;
-            width: 300px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            background-color: #fff;
-        }
-
-            .safety-score-card h3 {
-                font-size: 18px;
-                margin-bottom: 20px;
-                color: #333;
-            }
-
-        .circle-score {
-            width: 100px;
-            height: 100px;
-            border-radius: 50%;
-            background-color: #4caf50;
-            color: #fff;
-            font-size: 30px;
-            font-weight: bold;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin: 0 auto;
-        }
-
-        .score-bar {
-            margin: 20px 0;
-            width: 100%;
-            height: 10px;
-            background-color: #f1f1f1;
-            border-radius: 5px;
-            overflow: hidden;
-        }
-
-        .score-progress {
-            height: 100%;
-            background-color: #4caf50;
-            width: 0;
-            transition: width 0.5s ease;
-        }
-
-        .score-labels {
-            display: flex;
-            justify-content: space-between;
-            font-size: 12px;
-            color: #777;
-        }
-
-        #statistics {
-            margin-top: 20px;
-        }
-
-            #statistics p {
-                font-size: 16px;
-            }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-        }
-
-        th, td {
-            border: 1px solid #ccc;
-            padding: 8px;
-            text-align: left;
-        }
-
-        th {
-            background-color: #f4f4f4;
-        }
-
-        tr:nth-child(even) {
-            background-color: #f9f9f9;
-        }s
-    </style>
 }
