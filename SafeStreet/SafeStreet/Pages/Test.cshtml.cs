@@ -27,11 +27,20 @@ namespace SafeStreet.Pages
             _httpClient = new HttpClient();
         }
 
-        public void OnGet()
+        public double SafetyScore { get; private set; } = 100; // Default safety score
+        public string SearchNeighborhood { get; private set; } // Property to hold the neighborhood name
+
+        public void OnGet(string neighborhood)
         {
-            // Fetch Google Maps API key from configuration
             GoogleMapApiKey = _configuration["GoogleMapApiKey"];
+
+            // Set the neighborhood name if provided
+            if (!string.IsNullOrEmpty(neighborhood))
+            {
+                SearchNeighborhood = neighborhood;
+            }
         }
+
 
         [HttpGet]
         public async Task<IActionResult> OnGetCrimeStatsNearbyAsync(double latitude, double longitude)
@@ -78,9 +87,13 @@ namespace SafeStreet.Pages
                     })
                     .ToList();
 
+                // Calculate Safety Score
+                CalculateSafetyScore(nearbyCrimes);
+
                 // Prepare the response
                 var stats = new
                 {
+                    SafetyScore,
                     TotalCrimeStats = totalCrimeStats,
                     CrimeTypeStats = crimeTypeStats
                 };
@@ -151,5 +164,54 @@ namespace SafeStreet.Pages
         {
             return degrees * Math.PI / 180.0;
         }
+
+        private void CalculateSafetyScore(IEnumerable<Crime> crimes)
+        {
+            if (crimes == null || !crimes.Any())
+            {
+                SafetyScore = 100; // No crimes, perfectly safe
+                return;
+            }
+
+            // Severity categories
+            var highSeverityCrimes = new HashSet<string>
+    {
+        "SEXUAL BATTERY", "AGGRAVATED MENACING", "MURDER", "KIDNAPPING", "AGGRAVATED ROBBERY",
+        "AGGRAVATED BURGLARY", "FELONIOUS ASSAULT", "GROSS SEXUAL IMPOSITION",
+        "IMPROPERLY DISCHARGING FIREARM AT/INTO HABITATION/SCHOOL", "FAIL COMPLY ORDER/SIGNAL OF PO-ELUDE/FLEE"
+    };
+
+            var midSeverityCrimes = new HashSet<string>
+    {
+        "ASSAULT", "CRIMINAL DAMAGING/ENDANGERING", "THEFT", "BREAKING AND ENTERING",
+        "BURGLARY", "SEXUAL IMPOSITION", "ROBBERY", "VANDALISM", "DOMESTIC VIOLENCE",
+        "FORGERY", "TAKING THE IDENTITY OF ANOTHER", "UNAUTHORIZED USE OF MOTOR VEHICLE", "MENACING"
+    };
+
+            var lowSeverityCrimes = new HashSet<string>
+    {
+        "MISUSE OF CREDIT CARD", "TELEPHONE HARASSMENT", "TELECOMMUNICATIONS FRAUD", "PASSING BAD CHECKS",
+        "CRIMINAL MISCHIEF", "PUBLIC INDECENCY", "MAKING FALSE ALARMS", "EXTORTION",
+        "MENACING BY STALKING", "VEHICULAR VANDALISM", "VIOLATE PROTECTION ORDER/CONSENT AGREEMENT",
+        "ENDANGERING CHILDREN", "UNAUTHORIZED USE OF PROPERTY"
+    };
+
+            // Count crimes by severity
+            int highCount = crimes.Count(c => highSeverityCrimes.Contains(c.Offense));
+            int midCount = crimes.Count(c => midSeverityCrimes.Contains(c.Offense));
+            int lowCount = crimes.Count(c => lowSeverityCrimes.Contains(c.Offense));
+
+            // Calculate Weighted Crime Index
+            double weightedCrimeIndex = (highCount * 5) + (midCount * 3) + (lowCount * 1);
+
+            // Calculate Safety Score
+            const double crimeThreshold = 6000; // Normalization factor
+            SafetyScore = 100 - (int)Math.Floor((weightedCrimeIndex / crimeThreshold) * 100);
+            _logger.LogInformation($"SafetyScore: {SafetyScore}, weightedCrimeIndex: {weightedCrimeIndex}");
+
+            // Ensure the score is clamped between 0 and 100
+            SafetyScore = Math.Max(0, Math.Min(100, SafetyScore));
+        }
+
     }
 }

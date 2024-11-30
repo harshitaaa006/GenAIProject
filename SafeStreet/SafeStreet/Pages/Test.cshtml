@@ -8,7 +8,7 @@
 
 <!-- Map and Search Box -->
 <div id="map-container">
-    <input id="search-box" type="text" placeholder="Search for a place..." />
+    <input id="search-box" type="text" placeholder="Search for a place..." value="@Model.SearchNeighborhood" />
     <div id="map"></div>
 </div>
 
@@ -16,7 +16,7 @@
 <div class="safety-score-card">
     <h3><i class="fas fa-shield-alt"></i> Neighborhood Safety Score</h3>
     <div class="circle-score" id="circleScore">
-        <span id="safetyScore">85</span>
+        <span id="safetyScore">--</span>
     </div>
     <div class="score-bar">
         <div class="score-progress" id="scoreProgress"></div>
@@ -120,8 +120,6 @@
             });
         }
 
-        const score = 50; // Dynamic score from backend
-        updateSafetyScore(score);
 
         function updateSafetyScore(score) {
             // Update the circular score
@@ -135,10 +133,10 @@
             progressElement.style.width = `${percentage}%`;
 
             // Update color based on the score
-            if (score < 40) {
+            if (score < 35) {
                 circleElement.style.backgroundColor = '#f44336'; // Red for High Risk
                 progressElement.style.backgroundColor = '#f44336';
-            } else if (score < 80) {
+            } else if (score < 70) {
                 circleElement.style.backgroundColor = '#ff9800'; // Orange for Moderate
                 progressElement.style.backgroundColor = '#ff9800';
             } else {
@@ -162,7 +160,11 @@
 
                 const stats = await response.json();
                 console.log("stats: ", stats)
-                
+
+                // Update Safety Score
+                updateSafetyScore(stats.safetyScore);
+                console.log("score2: ", stats.safetyScore)
+
                 // Update the statistics in the UI
                 const totalStats = stats.totalCrimeStats;
                 console.log(totalStats)
