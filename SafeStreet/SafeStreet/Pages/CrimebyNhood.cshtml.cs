@@ -9,12 +9,12 @@ using System.Threading.Tasks;
 
 namespace SafeStreet.Pages
 {
-    public class IndexModel : PageModel
+    public class CrimebyNhoodModel : PageModel
     {
-        private readonly ILogger<IndexModel> _logger;
+        private readonly ILogger<CrimebyNhoodModel> _logger;
 
         static readonly HttpClient client = new HttpClient();
-        public IndexModel(ILogger<IndexModel> logger)
+        public CrimebyNhoodModel(ILogger<CrimebyNhoodModel> logger)
         {
             _logger = logger;
         }

@@ -1,5 +1,5 @@
 html {
-  font-size: 14px;
+    font-size: 14px;
 }
 
 @media (min-width: 768px) {
@@ -19,12 +19,13 @@ html {
 
 
 html {
-  position: relative;
-  min-height: 100%;
+    position: relative;
+    min-height: 100%;
 }
 
 body {
-  margin-bottom: 60px;
+    margin-bottom: 60px;
+    font-family: "Open Sans", sans-serif;
 }
 h1, h2, h3 {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -32,6 +33,12 @@ h1, h2, h3 {
 
 .navbar {
     border-bottom: 1px solid #ddd;
+    padding: 0px
+}
+
+.nav-item {
+    color: #1f2227;
+    margin-left: 1.2rem;
 }
 
 .footer {

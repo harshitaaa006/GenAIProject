@@ -1,0 +1,223 @@
+﻿@page
+@model SafeStreet.Pages.IndexModel
+@{
+    ViewData["Title"] = "Crime Data Analysis";
+}
+
+<!-- Map and Search Box -->
+<div id="map-container">
+    <input id="search-box" type="text" placeholder="Search for a place..." value="@Model.SearchNeighborhood" />
+    <div id="map"></div>
+</div>
+
+<div class="cards-container">
+    <!-- Score Section -->
+    <div class="card safety-score-card">
+        <h3><i class="fas fa-shield-alt"></i> Neighborhood Safety Score</h3>
+        <div class="circle-score" id="circleScore">
+            <span id="safetyScore">--</span>
+        </div>
+        <div class="score-bar">
+            <div class="score-progress" id="scoreProgress"></div>
+        </div>
+        <div class="score-labels">
+            <span>High Risk</span>
+            <span>Moderate</span>
+            <span>Very Safe</span>
+        </div>
+    </div>
+
+    <!-- Total crime Section -->
+    <div class="card crime-total-card">
+        <h2>Total Crime Nearby (1 km)</h2>
+        <table class="crime-total-table">
+            <thead>
+                <tr>
+                    <th>Time Period</th>
+                    <th>Crime Numbers</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Last 3 Months</td>
+                    <td id="totalLast3Months">-</td>
+                </tr>
+                <tr>
+                    <td>Last 6 Months</td>
+                    <td id="totalLast6Months">-</td>
+                </tr>
+                <tr>
+                    <td>Last 9 Months</td>
+                    <td id="totalLast9Months">-</td>
+                </tr>
+                <tr>
+                    <td>Last 1 Year</td>
+                    <td id="totalLast1Year">-</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+</div>
+
+<!-- Crime Type Section -->
+<div class="crime-type-card">
+    <h3>Crime Type</h3>
+    <table id="typeStatsTable">
+        <thead>
+            <tr>
+                <th>Incidents</th>
+                <th>Last 3 Months</th>
+                <th>Last 6 Months</th>
+                <th>Last 9 Months</th>
+                <th>Last 1 Year</th>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- Rows will be dynamically inserted here -->
+        </tbody>
+    </table>
+</div>
+
+
+
+@section Scripts {
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCqP_MugU3SwtJMIOC_fZ562NoWCbklz3Q&libraries=places&callback=initMap" async defer></script>
+    <script>
+        let map, searchBox, geocoder;
+
+        function initMap() {
+            const initialLocation = { lat: 39.1031, lng: -84.5120 }; // Default to Cincinnati
+            map = new google.maps.Map(document.getElementById('map'), {
+                center: initialLocation,
+                zoom: 12
+            });
+
+            // Initialize geocoder
+            geocoder = new google.maps.Geocoder();
+
+            // Initialize the search box
+            const input = document.getElementById('search-box');
+            searchBox = new google.maps.places.SearchBox(input);
+
+            // Bias the search box results towards the current map bounds
+            map.addListener('bounds_changed', () => {
+                searchBox.setBounds(map.getBounds());
+            });
+
+            // Listen for the user's search selection
+            searchBox.addListener('places_changed', () => {
+                const places = searchBox.getPlaces();
+                if (places.length === 0) return;
+
+                const place = places[0]; // Use the first place selected
+                if (!place.geometry || !place.geometry.location) return;
+
+                const latitude = place.geometry.location.lat();
+                const longitude = place.geometry.location.lng();
+
+                // Center the map on the selected place
+                map.setCenter(place.geometry.location);
+                map.setZoom(14);
+
+                // Fetch stats for the selected location
+                fetchCrimeStats(latitude, longitude);
+                console.log(latitude, longitude)
+            });
+
+            // Listen for map click events
+            map.addListener('click', (event) => {
+                const latitude = event.latLng.lat();
+                const longitude = event.latLng.lng();
+
+                // Use Reverse Geocoding to get the address of the clicked location
+                geocoder.geocode({ location: { lat: latitude, lng: longitude } }, (results, status) => {
+                    if (status === "OK" && results[0]) {
+                        // Update the search box with the formatted address
+                        input.value = results[0].formatted_address;
+                    } else {
+                        console.error("Geocoder failed due to: " + status);
+                    }
+                });
+
+                // Fetch stats for the clicked location
+                fetchCrimeStats(latitude, longitude);
+                console.log(latitude, longitude)
+            });
+        }
+
+
+        function updateSafetyScore(score) {
+            // Update the circular score
+            const scoreElement = document.getElementById('safetyScore');
+            scoreElement.textContent = score;
+
+            // Update the progress bar
+            const circleElement = document.getElementById('circleScore');
+            const progressElement = document.getElementById('scoreProgress');
+            const percentage = Math.min(Math.max(score, 0), 100); // Clamp between 0 and 100
+            progressElement.style.width = `${percentage}%`;
+
+            // Update color based on the score
+            if (score < 35) {
+                circleElement.style.backgroundColor = '#f44336'; // Red for High Risk
+                progressElement.style.backgroundColor = '#f44336';
+            } else if (score < 70) {
+                circleElement.style.backgroundColor = '#ff9800'; // Orange for Moderate
+                progressElement.style.backgroundColor = '#ff9800';
+            } else {
+                circleElement.style.backgroundColor = '#4caf50'; // Green for Very Safe
+                progressElement.style.backgroundColor = '#4caf50';
+            }
+        }
+
+        async function fetchCrimeStats(latitude, longitude) {
+            try {
+                document.getElementById('totalLast3Months').textContent = "Loading...";
+                document.getElementById('totalLast6Months').textContent = "Loading...";
+                document.getElementById('totalLast9Months').textContent = "Loading...";
+                document.getElementById('totalLast1Year').textContent = "Loading...";
+
+                const response = await fetch(`/Test?handler=CrimeStatsNearby&latitude=${latitude}&longitude=${longitude}`);
+                if (!response.ok) {
+                    console.error("Error fetching crime stats");
+                    return;
+                }
+
+                const stats = await response.json();
+                console.log("stats: ", stats)
+
+                // Update Safety Score
+                updateSafetyScore(stats.safetyScore);
+                console.log("score2: ", stats.safetyScore)
+
+                // Update the Total Crime in the UI
+                const totalStats = stats.totalCrimeStats;
+                console.log(totalStats)
+                document.getElementById('totalLast3Months').textContent = totalStats.last3Months;
+                document.getElementById('totalLast6Months').textContent = totalStats.last6Months;
+                document.getElementById('totalLast9Months').textContent = totalStats.last9Months;
+                document.getElementById('totalLast1Year').textContent = totalStats.last1Year;
+
+                // Update crime numbers by type
+                const typeStats = stats.crimeTypeStats;
+                const tableBody = document.getElementById('typeStatsTable').querySelector('tbody');
+                tableBody.innerHTML = ""; // Clear existing rows
+
+                typeStats.forEach(typeStat => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${typeStat.type}</td>
+                        <td>${typeStat.last3Months}</td>
+                        <td>${typeStat.last6Months}</td>
+                        <td>${typeStat.last9Months}</td>
+                        <td>${typeStat.last1Year}</td>
+                    `;
+                    tableBody.appendChild(row);
+                });
+            } catch (error) {
+                console.error("Error fetching crime stats:", error);
+            }
+        }
+    </script>
+}
