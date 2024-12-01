@@ -2,28 +2,30 @@
 @model SafeStreet.Pages.CrimeMapModel
 @{
     ViewData["Title"] = "Crime Map View";
+    var neighborhoods = Model.NeighborhoodSafetyScores;
 }
 
-<h2>Crime Map View</h2>
+<main>
+    <header>
+        <h1 id="pageTitle">Crime Map View</h1>
+        <p>
+            The safety scores below are ranked from highest to lowest, with higher scores indicating safer neighborhoods.
+        </p>
+        <p>
+            These scores are calculated based on a combination of recent police reports and user-submitted safety ratings.
+        </p>
+    </header>
 
-<!-- Explanation about the rankings and calculation -->
-<p>
-    The safety scores below are ranked from highest to lowest, with higher scores indicating safer neighborhoods</p>
-    <p>These scores are calculated based on a combination of recent police reports and user-submitted safety ratings</p>
+    <!-- Map Section -->
+    <section id="map-section" aria-labelledby="mapSectionTitle">
+        <h2 id="mapSectionTitle">Interactive Crime Map</h2>
+        <div id="map-container">
+            <div id="map" tabindex="0" aria-label="Interactive map showing neighborhoods and safety scores"></div>
+        </div>
+    </section>
 
-
-    <div id="map-container">
-        <div id="map"></div>
-    </div>
-
-    <!-- Selected Neighborhood Display -->
-    <h2 id="selected-neighborhood" style="text-align: center; margin: 20px 0;">Select a Neighborhood</h2>
-
-    <div class="crime-map-grid">
-        @{
-            var neighborhoods = (Dictionary<string, (double Lat, double Lng, double SafetyScore)>)ViewData["NeighborhoodSafetyScores"];
-        }
-
+    <!-- Neighborhoods Grid -->
+    <section class="crime-map-grid" aria-labelledby="crimeMapGridTitle">
         @foreach (var neighborhood in neighborhoods.OrderByDescending(kvp => kvp.Value.SafetyScore))
         {
             var safetyScore = neighborhood.Value.SafetyScore;
@@ -35,72 +37,74 @@
                 _ => "high-crime"
             };
 
-            <div class="grid-item @className" onclick="showOnMap('@neighborhood.Key', @neighborhood.Value.Lat, @neighborhood.Value.Lng)">
-                <span>@neighborhood.Key</span>
+            <article class="grid-item @className" tabindex="0" role="button"
+                     aria-label="View @(neighborhood.Key) on map. Safety score: @(safetyScore.ToString("F1"))"
+                     onclick="showOnMap('@(neighborhood.Key)', @(neighborhood.Value.Lat), @(neighborhood.Value.Lng))">
+                <span>@(neighborhood.Key)</span>
                 <br />
-                <span>Safety Score: @safetyScore.ToString("F1")</span> <!-- Format score to 1 decimal place -->
-            </div>
+                <span>Safety Score: @(safetyScore.ToString("F1"))</span>
+            </article>
         }
+    </section>
+
+    <!-- Action Buttons -->
+    <div class="action-buttons text-center mt-5">
+        <a asp-page="/UserRatings/Create" class="btn btn-dark-blue btn-lg" aria-label="Submit a safety rating">
+            <i class="fas fa-edit" aria-hidden="true"></i> Submit a Safety Rating
+        </a>
+        <a asp-page="/Index" class="btn btn-dark-blue btn-lg" aria-label="Search neighborhoods on the map">
+            <i class="fas fa-map-marked-alt" aria-hidden="true"></i> Search on Map
+        </a>
     </div>
-</div>
+</main>
 
 @section Scripts {
     <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCqP_MugU3SwtJMIOC_fZ562NoWCbklz3Q&libraries=places&callback=initMap" async defer></script>
         
     <script>
-        let map;
+let map; // Global map variable
+let currentMarker; // To track the current marker
 
-        function initMap() {
-            const initialLocation = { lat: 39.1031, lng: -84.5120 }; // Default to Cincinnati
-            map = new google.maps.Map(document.getElementById("map"), {
-                center: initialLocation,
-                zoom: 12,
-            });
+function initMap() {
+    const initialLocation = { lat: 39.1031, lng: -84.5120 }; // Default to Cincinnati
+    map = new google.maps.Map(document.getElementById("map"), {
+        center: initialLocation,
+        zoom: 12, // Default zoom level
+    });
+}
+
+function showOnMap(name, lat, lng) {
+    // Update the selected neighborhood name
+    const neighborhoodNameElement = document.getElementById('crimeMapGridTitle');
+    neighborhoodNameElement.textContent = name;
+
+    // Check if latitude and longitude are valid
+    if (!isNaN(lat) && !isNaN(lng)) {
+        const mapCenter = { lat, lng };
+
+        // Update the map's center and zoom level
+        map.setCenter(mapCenter);
+        map.setZoom(14);
+
+        // Remove the previous marker, if it exists
+        if (currentMarker) {
+            currentMarker.setMap(null); // Removes the marker from the map
         }
 
-        let currentMarker; // To keep track of the current marker
-
-        function showOnMap(name, lat, lng) {
-            // Update the selected neighborhood name
-            const neighborhoodNameElement = document.getElementById('selected-neighborhood');
-            neighborhoodNameElement.textContent = name;
-            
-            if (!isNaN(lat) && !isNaN(lng)) {
-                const mapCenter = { lat, lng };
-
-                // Update the map center and zoom
-                map.setCenter(mapCenter);
-                map.setZoom(14);
-
-                // Remove the old marker if it exists
-                if (currentMarker) {
-                    currentMarker.setMap(null); // Removes the marker from the map
-                }
-                // Add a marker
-                currentMarker = new google.maps.Marker({
-                                    position: mapCenter,
-                                    map: map,
-                                    title: name,
-                });
-            }
-        }
+        // Add a new marker to the map
+        currentMarker = new google.maps.Marker({
+            position: mapCenter,
+            map: map,
+            title: name, // Set the tooltip text
+        });
+    }
+}
 
     </script>
 }
-<!-- Action Buttons -->
-<div class="action-buttons text-center mt-5">
-    <div class="action-buttons text-center mt-5">
-        <!-- Submit Your Safety Rating Button -->
-        <a asp-page="/UserRatings/Create" class="btn btn-dark-blue btn-lg">
-            <i class="fas fa-edit"></i> Submit a Safety Rating
-        </a>
 
-        <!-- View Neighborhood Ratings Button -->
-        <a asp-page="/Index" class="btn btn-dark-blue btn-lg">
-            <i class="fas fa-map-marked-alt"></i> Search on Map
-        </a>
-    </div>
-</div>
+
+
 <style>
     .crime-map-grid {
         display: grid;
