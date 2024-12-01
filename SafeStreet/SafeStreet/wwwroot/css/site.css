@@ -217,3 +217,23 @@ h1, h2, h3 {
     #typeStatsTable tr:nth-child(even) {
         background-color: #f9f9f9;
     }
+.action-buttons a {
+    padding: 15px 25px;
+    font-size: 1.2rem;
+    font-weight: bold;
+    border-radius: 8px;
+    text-decoration: none;
+    color: white;
+    background-color: #003366; /* Dark blue background */
+    border: 2px solid #003366;
+    transition: background-color 0.3s ease, border-color 0.3s ease;
+}
+
+    .action-buttons a:hover {
+        background-color: #001f4d; /* Slightly darker blue on hover */
+        border-color: #001f4d;
+    }
+
+    .action-buttons a i {
+        margin-right: 10px; /* Space between icon and text */
+    }

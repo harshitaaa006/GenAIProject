@@ -1,5 +1,7 @@
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json.Linq;
+using SafeStreet.Data;
 using SafeStreet.Models;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,6 +12,13 @@ namespace SafeStreet.Pages
 {
     public class CrimeMapModel : PageModel
     {
+        private readonly SafeStreetContext _context;
+
+        public CrimeMapModel(SafeStreetContext context)
+        {
+            _context = context;
+        }
+
         private static readonly HttpClient client = new HttpClient();
 
         // Dictionary to hold neighborhood and its safety score
@@ -31,26 +40,34 @@ namespace SafeStreet.Pages
                         item => item["cpd_neighborhood"]?.ToString() ?? "Unknown Neighborhood",
                         item => item["offense"]?.ToString() ?? "Unknown Offense"
                     );
+                // Fetch average user ratings per neighborhood from the database
+                var userRatings = await _context.UserRating
+                    .GroupBy(r => r.Neighborhood)
+                    .ToDictionaryAsync(g => g.Key, g => g.Average(r => r.SafetyRating));
 
                 // Calculate safety scores for each neighborhood
                 NeighborhoodSafetyScores = groupedCrimes
                     .Select(group =>
                     {
-                        var neighborhood = group.Key; // Neighborhood name
-                        var offenses = group.ToList(); // List of offenses for the neighborhood
-                        var safetyScore = CalculateSafetyScore(offenses); // Calculate safety score
+                        var neighborhood = group.Key;
+                        var offenses = group.ToList();
+
+                        // Default user rating to 100 if no ratings exist for the neighborhood
+                        var averageUserRating = userRatings.ContainsKey(neighborhood) ? userRatings[neighborhood] : 100;
+
+                        var safetyScore = CalculateSafetyScore(offenses, averageUserRating);
                         return new { Neighborhood = neighborhood, SafetyScore = safetyScore };
                     })
-                    .OrderByDescending(score => score.SafetyScore) // Sort by safety score (highest to lowest)
+                    .OrderByDescending(score => score.SafetyScore)
                     .ToDictionary(x => x.Neighborhood, x => x.SafetyScore);
             }
         }
-        // Calculate safety score based on offense weights
-        private double CalculateSafetyScore(List<string> offenses)
+            // Calculate safety score based on offense weights
+            private double CalculateSafetyScore(List<string> offenses, double averageUserRating)
+            {
+                var offenseWeights = new Dictionary<string, int>
         {
-            var offenseWeights = new Dictionary<string, int>
-        {
-        { "MURDER", 1 },
+            { "MURDER", 1 },
             { "RAPE", 5 },
             { "ABDUCTION", 8 },
             { "AGGRAVATED ROBBERY", 10 },
@@ -85,21 +102,22 @@ namespace SafeStreet.Pages
             { "CRIMINAL MISCHIEF", 90 },
     };
 
-            // Calculate weights for given offenses
-            var weights = offenses
-                .Where(offense => offenseWeights.ContainsKey(offense)) // Filter offenses that exist in the dictionary
-                .Select(offense => offenseWeights[offense]); // Map offenses to their weights
+                var weights = offenses
+                     .Where(offense => offenseWeights.ContainsKey(offense))
+                     .Select(offense => offenseWeights[offense]);
 
-            // Calculate total weight and offense count
-            double totalWeight = weights.Sum();
-            int offenseCount = weights.Count();
+                double totalWeight = weights.Sum();
+                int offenseCount = weights.Count();
 
-            // Return average score (100 if no offenses reported)
-            return offenseCount > 0 ? totalWeight / offenseCount : 100;
+                // Objective offense score
+                double offenseScore = offenseCount > 0 ? totalWeight / offenseCount : 100;
+
+                // Weighted average: 80% offense score + 20% user ratings
+                return (offenseScore * 0.8) + (averageUserRating * 0.2);
+            }
         }
-
     }
-}
+
 
            
      
