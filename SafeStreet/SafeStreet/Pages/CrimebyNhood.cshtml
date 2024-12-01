@@ -1,0 +1,43 @@
+﻿@page
+@model SafeStreet.Pages.CrimebyNhoodModel
+@{
+
+    var brand = ViewData["Brand"] ?? "Crime Data";
+    ViewData["Title"] = brand;
+
+    // Chatgpt help
+    // Get offenses grouped by neighborhood from ViewData
+    var offensesByNeighborhood = ViewData["OffensesByNeighborhood"] as Dictionary<string, List<string>> ?? new Dictionary<string, List<string>>();
+    var query = ViewData["Query"] as string ?? string.Empty;
+}
+
+    <h1>@brand - Neighborhoods</h1>
+    <form method="get">
+        <label for="query">Search for Crime Data by Neeighborhood or Offense:</label>
+        <input type="text" id="query" name="query" />
+        <button type="submit">Search</button>
+    </form>
+</div>
+
+@if (offensesByNeighborhood.Any())
+{
+    <ul>
+        @foreach (var neighborhood in offensesByNeighborhood)
+        {
+            <li>
+                <strong>@neighborhood.Key</strong>
+                <ul>
+                    @foreach (var offense in neighborhood.Value)
+                    {
+                        <li>@offense</li>
+                    }
+                </ul>
+            </li>
+        }
+    </ul>
+}
+else
+{
+    <p>No data available for neighborhoods or offenses.</p>
+}
+

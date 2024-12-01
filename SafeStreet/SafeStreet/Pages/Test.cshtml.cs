@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.CodeAnalysis.Elfie.Diagnostics;
 using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json.Linq;
 using SafeStreet.Models;
@@ -11,16 +12,16 @@ using System.Threading.Tasks;
 
 namespace SafeStreet.Pages
 {
-    public class IndexModel : PageModel
+    public class TestModel : PageModel
     {
-        private readonly ILogger<IndexModel> _logger;
+        private readonly ILogger<TestModel> _logger;
         private readonly IConfiguration _configuration;
         private readonly HttpClient _httpClient;
 
         public string GoogleMapApiKey { get; private set; }
         public List<Crime> Crimes { get; set; } = new List<Crime>();
 
-        public IndexModel(ILogger<IndexModel> logger, IConfiguration configuration)
+        public TestModel(ILogger<TestModel> logger, IConfiguration configuration)
         {
             _logger = logger;
             _configuration = configuration;
@@ -30,15 +31,9 @@ namespace SafeStreet.Pages
         public double SafetyScore { get; private set; } = 100; // Default safety score
         public string SearchNeighborhood { get; private set; } // Property to hold the neighborhood name
 
-        public void OnGet(string neighborhood)
+        public void OnGet()
         {
             GoogleMapApiKey = _configuration["GoogleMapApiKey"];
-
-            // Set the neighborhood name if provided
-            if (!string.IsNullOrEmpty(neighborhood))
-            {
-                SearchNeighborhood = neighborhood;
-            }
         }
 
 

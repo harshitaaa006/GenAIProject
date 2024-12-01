@@ -1,0 +1,59 @@
+﻿@page
+@model SafeStreet.Pages.UserRatings.CreateModel
+
+@{
+    ViewData["Title"] = "Create";
+}
+
+
+<div class="container my-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <h1 class="text-center mb-4">Submit Your Rating</h1>
+            <form method="post" class="shadow p-4 bg-light rounded">
+                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+                <!-- Neighborhood Dropdown -->
+                <div class="form-group mb-3">
+                    <label asp-for="UserRating.Neighborhood" class="form-label">Select Neighborhood</label>
+                    <select asp-for="UserRating.Neighborhood" class="form-select" required>
+                        <option value="">-- Select a Neighborhood --</option>
+                        @foreach (var neighborhood in Model.Neighborhoods)
+                        {
+                            <option value="@neighborhood">@neighborhood</option>
+                        }
+                    </select>
+                    <span asp-validation-for="UserRating.Neighborhood" class="text-danger"></span>
+                </div>
+
+                <!-- Safety Rating Input -->
+                <div class="form-group mb-3">
+                    <label asp-for="UserRating.SafetyRating" class="form-label">Safety Rating (100 = Most Safe)</label>
+                    <input asp-for="UserRating.SafetyRating" class="form-control" type="number" min="0" max="100" required />
+                    <span asp-validation-for="UserRating.SafetyRating" class="text-danger"></span>
+                </div>
+
+                <!-- Description Input -->
+                <div class="form-group mb-3">
+                    <label asp-for="UserRating.Description" class="form-label">Description</label>
+                    <textarea asp-for="UserRating.Description" class="form-control" rows="4" required></textarea>
+                    <span asp-validation-for="UserRating.Description" class="text-danger"></span>
+                </div>
+
+                <!-- Buttons -->
+                <div class="d-flex justify-content-between">
+                    <a asp-page="./Index" class="btn btn-secondary">Back to List</a>
+                    <button type="submit" class="btn btn-primary">Submit Rating</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

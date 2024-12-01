@@ -1,0 +1,21 @@
+﻿@page
+@model SafeStreet.Pages.OffenseListModel
+@{
+    ViewData["Title"] = "Offense List";
+}
+
+<h1>List of Offenses</h1>
+
+@if (Model.Offenses?.Any() == true)
+{
+    <ul>
+        @foreach (var offense in Model.Offenses)
+        {
+            <li>@offense</li>
+        }
+    </ul>
+}
+else
+{
+    <p>No offenses found or an error occurred while fetching data.</p>
+}
