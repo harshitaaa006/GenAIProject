@@ -3,102 +3,106 @@
 @{
     ViewData["Title"] = "Crime Data Analysis";
 }
-<h3> Welcome to SafeStreet! Search in the map and scroll below to view safety ratings</h3>
+<header>
+    <h1 id="pageTitle">Welcome to SafeStreet Crime Data Analysis</h1>
+</header>
+<main id="mainContent">
+    <h3>Search in the map and scroll below to view safety ratings</h3>
 
-<div class="flex-container">
-    <!-- Map Section -->
-    <div id="map-section">
-        <div id="map-container">
-            <input id="search-box" type="text" placeholder="Search for desired location..." value="@Model.SearchNeighborhood" />
-            <div id="map"></div>
-        </div>
-    </div>
+    <div class="flex-container">
+        <!-- Map Section -->
+        <section id="map-section" aria-labelledby="mapSectionTitle">
+            <div id="map-container">
+                <input id="search-box" type="text" placeholder="Search for desired location..." value="@Model.SearchNeighborhood" aria-label="Search for desired location" />
+                <div id="map" tabindex="0" aria-label="Interactive map showing crime data"></div>
+            </div>
+        </section>
 
-    <!-- Stats Section -->
-    <div id="stats-section">
-        <div class="cards-container">
-            <!-- Safety Score Section -->
-            <div class="card safety-score-card">
-                <h3><i class="fas fa-shield-alt"></i> Neighborhood Safety Score</h3>
-                <div class="circle-score" id="circleScore">
-                    <span id="safetyScore">--</span>
-                </div>
-                <div class="score-bar">
-                    <div class="score-progress" id="scoreProgress"></div>
-                </div>
-                <div class="score-labels">
-                    <span>High Risk</span>
-                    <span>Moderate</span>
-                    <span>Very Safe</span>
-                </div>
+        <!-- Stats Section -->
+        <section id="stats-section" aria-labelledby="statsSectionTitle">
+            <h2 id="statsSectionTitle">Crime Statistics</h2>
+            <div class="cards-container">
+                <!-- Safety Score Section -->
+                <article class="card safety-score-card" aria-labelledby="safetyScoreTitle">
+                    <h3 id="safetyScoreTitle"><i class="fas fa-shield-alt" aria-hidden="true"></i> Neighborhood Safety Score</h3>
+                    <div class="circle-score" id="circleScore" aria-live="polite" aria-label="Current neighborhood safety score">
+                        <span id="safetyScore">--</span>
+                    </div>
+                    <progress class="score-bar" id="scoreProgress" aria-valuemin="0" aria-valuemax="100" aria-valuenow="50">
+                        50%
+                    </progress>
+                    <div class="score-labels">
+                        <span>High Risk</span>
+                        <span>Moderate</span>
+                        <span>Very Safe</span>
+                    </div>
+                </article>
+
+                <!-- Total Crime Section -->
+                <article class="card crime-total-card" aria-labelledby="totalCrimeTitle">
+                    <h3 id="totalCrimeTitle">Total Crime Nearby (1 km)</h3>
+                    <table class="crime-total-table">
+                        <caption>Table showing total crimes in the last year by time period</caption>
+                        <thead>
+                            <tr>
+                                <th scope="col">Time Period</th>
+                                <th scope="col">Crime Numbers</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td scope="row">Last 3 Months</td>
+                                <td id="totalLast3Months">-</td>
+                            </tr>
+                            <tr>
+                                <td scope="row">Last 6 Months</td>
+                                <td id="totalLast6Months">-</td>
+                            </tr>
+                            <tr>
+                                <td scope="row">Last 9 Months</td>
+                                <td id="totalLast9Months">-</td>
+                            </tr>
+                            <tr>
+                                <td scope="row">Last 1 Year</td>
+                                <td id="totalLast1Year">-</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </article>
             </div>
 
-            <!-- Total Crime Section -->
-            <div class="card crime-total-card">
-                <h2>Total Crime Nearby (1 km)</h2>
-                <table class="crime-total-table">
+            <!-- Crime Type Section -->
+            <article class="crime-type-card" aria-labelledby="crimeTypeTitle">
+                <h3 id="crimeTypeTitle">Crime Type</h3>
+                <table id="typeStatsTable">
+                    <caption>Table showing crimes categorized by type</caption>
                     <thead>
                         <tr>
-                            <th>Time Period</th>
-                            <th>Crime Numbers</th>
+                            <th scope="col">Incidents</th>
+                            <th scope="col">Last 3 Months</th>
+                            <th scope="col">Last 6 Months</th>
+                            <th scope="col">Last 9 Months</th>
+                            <th scope="col">Last 1 Year</th>
                         </tr>
                     </thead>
                     <tbody>
-                        <tr>
-                            <td>Last 3 Months</td>
-                            <td id="totalLast3Months">-</td>
-                        </tr>
-                        <tr>
-                            <td>Last 6 Months</td>
-                            <td id="totalLast6Months">-</td>
-                        </tr>
-                        <tr>
-                            <td>Last 9 Months</td>
-                            <td id="totalLast9Months">-</td>
-                        </tr>
-                        <tr>
-                            <td>Last 1 Year</td>
-                            <td id="totalLast1Year">-</td>
-                        </tr>
+                        <!-- Rows will be dynamically inserted here -->
                     </tbody>
                 </table>
-            </div>
-        </div>
-
-        <!-- Crime Type Section -->
-        <div class="crime-type-card">
-            <h3>Crime Type</h3>
-            <table id="typeStatsTable">
-                <thead>
-                    <tr>
-                        <th>Incidents</th>
-                        <th>Last 3 Months</th>
-                        <th>Last 6 Months</th>
-                        <th>Last 9 Months</th>
-                        <th>Last 1 Year</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <!-- Rows will be dynamically inserted here -->
-                </tbody>
-            </table>
-        </div>
+            </article>
+        </section>
     </div>
-</div>
-<!-- Action Buttons -->
-<div class="action-buttons text-center mt-5">
+
+    <!-- Action Buttons -->
     <div class="action-buttons text-center mt-5">
-        <!-- Submit Your Safety Rating Button -->
-        <a asp-page="/UserRatings/Create" class="btn btn-dark-blue btn-lg">
-            <i class="fas fa-edit"></i> Submit a Safety Rating
+        <a asp-page="/UserRatings/Create" class="btn btn-dark-blue btn-lg" aria-label="Submit a safety rating">
+            <i class="fas fa-edit" aria-hidden="true"></i> Submit a Safety Rating
         </a>
-
-        <!-- View Neighborhood Ratings Button -->
-        <a asp-page="/CrimeMap" class="btn btn-dark-blue btn-lg">
-            <i class="fas fa-map-marked-alt"></i> View Ratings by Neighborhood
+        <a asp-page="/CrimeMap" class="btn btn-dark-blue btn-lg" aria-label="View ratings by neighborhood">
+            <i class="fas fa-map-marked-alt" aria-hidden="true"></i> View Ratings by Neighborhood
         </a>
     </div>
-   </div>
+</main>
 
 
 @section Scripts {
