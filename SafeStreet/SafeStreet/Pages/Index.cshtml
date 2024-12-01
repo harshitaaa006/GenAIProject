@@ -3,82 +3,102 @@
 @{
     ViewData["Title"] = "Crime Data Analysis";
 }
+<h3> Welcome to SafeStreet! Search in the map and scroll below to view safety ratings</h3>
 
-<!-- Map and Search Box -->
-<div id="map-container">
-    <input id="search-box" type="text" placeholder="Search for a place..." value="@Model.SearchNeighborhood" />
-    <div id="map"></div>
-</div>
-
-<div class="cards-container">
-    <!-- Score Section -->
-    <div class="card safety-score-card">
-        <h3><i class="fas fa-shield-alt"></i> Neighborhood Safety Score</h3>
-        <div class="circle-score" id="circleScore">
-            <span id="safetyScore">--</span>
-        </div>
-        <div class="score-bar">
-            <div class="score-progress" id="scoreProgress"></div>
-        </div>
-        <div class="score-labels">
-            <span>High Risk</span>
-            <span>Moderate</span>
-            <span>Very Safe</span>
+<div class="flex-container">
+    <!-- Map Section -->
+    <div id="map-section">
+        <div id="map-container">
+            <input id="search-box" type="text" placeholder="Search for desired location..." value="@Model.SearchNeighborhood" />
+            <div id="map"></div>
         </div>
     </div>
 
-    <!-- Total crime Section -->
-    <div class="card crime-total-card">
-        <h2>Total Crime Nearby (1 km)</h2>
-        <table class="crime-total-table">
-            <thead>
-                <tr>
-                    <th>Time Period</th>
-                    <th>Crime Numbers</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <td>Last 3 Months</td>
-                    <td id="totalLast3Months">-</td>
-                </tr>
-                <tr>
-                    <td>Last 6 Months</td>
-                    <td id="totalLast6Months">-</td>
-                </tr>
-                <tr>
-                    <td>Last 9 Months</td>
-                    <td id="totalLast9Months">-</td>
-                </tr>
-                <tr>
-                    <td>Last 1 Year</td>
-                    <td id="totalLast1Year">-</td>
-                </tr>
-            </tbody>
-        </table>
+    <!-- Stats Section -->
+    <div id="stats-section">
+        <div class="cards-container">
+            <!-- Safety Score Section -->
+            <div class="card safety-score-card">
+                <h3><i class="fas fa-shield-alt"></i> Neighborhood Safety Score</h3>
+                <div class="circle-score" id="circleScore">
+                    <span id="safetyScore">--</span>
+                </div>
+                <div class="score-bar">
+                    <div class="score-progress" id="scoreProgress"></div>
+                </div>
+                <div class="score-labels">
+                    <span>High Risk</span>
+                    <span>Moderate</span>
+                    <span>Very Safe</span>
+                </div>
+            </div>
+
+            <!-- Total Crime Section -->
+            <div class="card crime-total-card">
+                <h2>Total Crime Nearby (1 km)</h2>
+                <table class="crime-total-table">
+                    <thead>
+                        <tr>
+                            <th>Time Period</th>
+                            <th>Crime Numbers</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Last 3 Months</td>
+                            <td id="totalLast3Months">-</td>
+                        </tr>
+                        <tr>
+                            <td>Last 6 Months</td>
+                            <td id="totalLast6Months">-</td>
+                        </tr>
+                        <tr>
+                            <td>Last 9 Months</td>
+                            <td id="totalLast9Months">-</td>
+                        </tr>
+                        <tr>
+                            <td>Last 1 Year</td>
+                            <td id="totalLast1Year">-</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Crime Type Section -->
+        <div class="crime-type-card">
+            <h3>Crime Type</h3>
+            <table id="typeStatsTable">
+                <thead>
+                    <tr>
+                        <th>Incidents</th>
+                        <th>Last 3 Months</th>
+                        <th>Last 6 Months</th>
+                        <th>Last 9 Months</th>
+                        <th>Last 1 Year</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Rows will be dynamically inserted here -->
+                </tbody>
+            </table>
+        </div>
     </div>
-
 </div>
+<!-- Action Buttons -->
+<div class="action-buttons text-center mt-5">
+    <div class="action-buttons text-center mt-5">
+        <!-- Submit Your Safety Rating Button -->
+        <a asp-page="/UserRatings/Create" class="btn btn-dark-blue btn-lg">
+            <i class="fas fa-edit"></i> Submit a Safety Rating
+        </a>
 
-<!-- Crime Type Section -->
-<div class="crime-type-card">
-    <h3>Crime Type</h3>
-    <table id="typeStatsTable">
-        <thead>
-            <tr>
-                <th>Incidents</th>
-                <th>Last 3 Months</th>
-                <th>Last 6 Months</th>
-                <th>Last 9 Months</th>
-                <th>Last 1 Year</th>
-            </tr>
-        </thead>
-        <tbody>
-            <!-- Rows will be dynamically inserted here -->
-        </tbody>
-    </table>
-</div>
-
+        <!-- View Neighborhood Ratings Button -->
+        <a asp-page="/CrimeMap" class="btn btn-dark-blue btn-lg">
+            <i class="fas fa-map-marked-alt"></i> View Ratings by Neighborhood
+        </a>
+    </div>
+   </div>
 
 
 @section Scripts {
@@ -252,3 +272,5 @@
         }
     </script>
 }
+
+
