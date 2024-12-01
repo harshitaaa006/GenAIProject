@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.CodeAnalysis.Elfie.Diagnostics;
 using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json.Linq;
 using SafeStreet.Models;
@@ -30,15 +31,9 @@ namespace SafeStreet.Pages
         public double SafetyScore { get; private set; } = 100; // Default safety score
         public string SearchNeighborhood { get; private set; } // Property to hold the neighborhood name
 
-        public void OnGet(string neighborhood)
+        public void OnGet()
         {
             GoogleMapApiKey = _configuration["GoogleMapApiKey"];
-
-            // Set the neighborhood name if provided
-            if (!string.IsNullOrEmpty(neighborhood))
-            {
-                SearchNeighborhood = neighborhood;
-            }
         }
 
 

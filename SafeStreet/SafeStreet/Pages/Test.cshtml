@@ -88,10 +88,20 @@
 
         function initMap() {
             const initialLocation = { lat: 39.1031, lng: -84.5120 }; // Default to Cincinnati
+            
+            // parameters from other page
+            const lat = parseFloat(getQueryParam('latitude')); 
+            const lng = parseFloat(getQueryParam('longitude'));
+            const neighborhood = getQueryParam('neighborhood');
+
+            let mapCenter = (!isNaN(lat) && !isNaN(lng)) ? { lat, lng } : initialLocation;
+            let currentMarker = null;
+            
             map = new google.maps.Map(document.getElementById('map'), {
-                center: initialLocation,
-                zoom: 12
+                center: mapCenter,
+                zoom: (!isNaN(lat) && !isNaN(lng)) ? 14 : 12,
             });
+            console.log(`Updated map to location: ${mapCenter.lat}, ${mapCenter.lng}, neighborhood:${neighborhood}`);
 
             // Initialize geocoder
             geocoder = new google.maps.Geocoder();
@@ -99,6 +109,25 @@
             // Initialize the search box
             const input = document.getElementById('search-box');
             searchBox = new google.maps.places.SearchBox(input);
+
+            // Update the search box value
+            if (input) {
+                input.value = neighborhood ? decodeURIComponent(neighborhood) : `${lat}, ${lng}`;
+            }
+
+            // If latitude and longitude are present, update the map
+            if (!isNaN(lat) && !isNaN(lng)) {
+                currentMarker = new google.maps.Marker({
+                    position: mapCenter,
+                    map: map,
+                });
+
+            }
+
+            // Trigger fetch after updating map
+            if (!isNaN(lat) && !isNaN(lng)) {
+                fetchCrimeStats(lat, lng); 
+            }
 
             // Bias the search box results towards the current map bounds
             map.addListener('bounds_changed', () => {
@@ -116,6 +145,17 @@
                 const latitude = place.geometry.location.lat();
                 const longitude = place.geometry.location.lng();
 
+                // Remove the old marker if it exists
+                if (currentMarker) {
+                    currentMarker.setMap(null); // Removes the marker from the map
+                }
+
+                // Place a new marker at the new location
+                currentMarker = new google.maps.Marker({
+                                position: mapCenter,
+                                map: map,
+                });
+
                 // Center the map on the selected place
                 map.setCenter(place.geometry.location);
                 map.setZoom(14);
@@ -130,6 +170,8 @@
                 const latitude = event.latLng.lat();
                 const longitude = event.latLng.lng();
 
+                mapCenter = { lat: latitude, lng: longitude };
+
                 // Use Reverse Geocoding to get the address of the clicked location
                 geocoder.geocode({ location: { lat: latitude, lng: longitude } }, (results, status) => {
                     if (status === "OK" && results[0]) {
@@ -140,12 +182,31 @@
                     }
                 });
 
+                // Remove the old marker if it exists
+                if (currentMarker) {
+                    currentMarker.setMap(null); // Removes the marker from the map
+                }
+
+                // Place a new marker at the new location
+                currentMarker = new google.maps.Marker({
+                                position: mapCenter,
+                                map: map,
+                });
+
+                map.setCenter(mapCenter);
+                map.setZoom(14);
+
                 // Fetch stats for the clicked location
                 fetchCrimeStats(latitude, longitude);
                 console.log(latitude, longitude)
             });
         }
 
+        // Function to parse query parameters from the URL
+        function getQueryParam(param) {
+            const urlParams = new URLSearchParams(window.location.search);
+            return urlParams.get(param);
+        }
 
         function updateSafetyScore(score) {
             // Update the circular score
