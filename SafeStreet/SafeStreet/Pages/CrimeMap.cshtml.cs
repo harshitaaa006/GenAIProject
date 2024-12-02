@@ -57,7 +57,7 @@ namespace SafeStreet.Pages
                         var averageUserRating = userRatings.ContainsKey(neighborhood) ? userRatings[neighborhood] : 100;
 
                         var safetyScore = CalculateSafetyScore(offenses, averageUserRating);
-                        
+
                         _logger.LogInformation($"Processing neighborhood: {neighborhood}");
 
                         var defaultCoordinates = neighborhood switch
@@ -125,14 +125,14 @@ namespace SafeStreet.Pages
                     .OrderByDescending(entry => entry.Data.SafetyScore) // Sort by SafetyScore (highest to lowest)
                     .ToDictionary(entry => entry.Neighborhood, entry => entry.Data);
 
-                    ViewData["NeighborhoodSafetyScores"] = NeighborhoodSafetyScores;
+                ViewData["NeighborhoodSafetyScores"] = NeighborhoodSafetyScores;
 
             }
         }
-            // Calculate safety score based on offense weights
-            private double CalculateSafetyScore(List<string> offenses, double averageUserRating)
-            {
-                var offenseWeights = new Dictionary<string, int>
+        // Calculate safety score based on offense weights
+        private double CalculateSafetyScore(List<string> offenses, double averageUserRating)
+        {
+            var offenseWeights = new Dictionary<string, int>
         {
             { "MURDER", 1 },
             { "RAPE", 5 },
@@ -169,20 +169,19 @@ namespace SafeStreet.Pages
             { "CRIMINAL MISCHIEF", 90 },
     };
 
-                var weights = offenses
-                     .Where(offense => offenseWeights.ContainsKey(offense))
-                     .Select(offense => offenseWeights[offense]);
+            var weights = offenses
+                 .Where(offense => offenseWeights.ContainsKey(offense))
+                 .Select(offense => offenseWeights[offense]);
 
-                double totalWeight = weights.Sum();
-                int offenseCount = weights.Count();
+            double totalWeight = weights.Sum();
+            int offenseCount = weights.Count();
 
-                // Objective offense score
-                double offenseScore = offenseCount > 0 ? totalWeight / offenseCount : 100;
+            // Objective offense score
+            double offenseScore = offenseCount > 0 ? totalWeight / offenseCount : 100;
 
-                // Weighted average: 80% offense score + 20% user ratings
-                return (offenseScore * 0.8) + (averageUserRating * 0.2);
-            }
+            // Weighted average: 80% offense score + 20% user ratings
+            return (offenseScore * 0.8) + (averageUserRating * 0.2);
         }
     }
-
+}
 
