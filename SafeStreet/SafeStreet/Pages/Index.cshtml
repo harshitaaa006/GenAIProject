@@ -4,10 +4,19 @@
     ViewData["Title"] = "Crime Data Analysis";
 }
 <header>
-    <h1 id="pageTitle">Welcome to SafeStreet Crime Data Analysis</h1>
+    <hr>
+    <div class="container my-5">
+        <h1 class="text-center mb-5" style="color: black; font-family: 'Poppins', sans-serif; font-weight: bold;">Welcome to SafeStreet Crime Data Analysis</h1>
+    </div>
 </header>
+
+
+<hr>
+
 <main id="mainContent">
-    <h3>Search in the map and scroll below to view safety ratings</h3>
+    <h3 class="text-center mb-5" style="color: black; font-family: 'Poppins', sans-serif; font-weight: bold;">Search in the map and scroll below to view safety ratings</h3>
+</main>
+
 
     <div class="flex-container">
         <!-- Map Section -->
@@ -17,10 +26,11 @@
                 <div id="map" tabindex="0" aria-label="Interactive map showing crime data"></div>
             </div>
         </section>
-
+         <hr>
         <!-- Stats Section -->
         <section id="stats-section" aria-labelledby="statsSectionTitle">
-            <h2 id="statsSectionTitle">Crime Statistics</h2>
+        <h3 class="text-center mb-5" style="color: black; font-family: 'Poppins', sans-serif; font-weight: bold;" id="statsSectionTitle">Crime Statistics</h3>
+        <hr />
             <div class="cards-container">
                 <!-- Safety Score Section -->
                 <article class="card safety-score-card" aria-labelledby="safetyScoreTitle">
@@ -70,10 +80,12 @@
                     </table>
                 </article>
             </div>
-
+            <hr>
             <!-- Crime Type Section -->
             <article class="crime-type-card" aria-labelledby="crimeTypeTitle">
-                <h3 id="crimeTypeTitle">Crime Type</h3>
+            <h3 class="text-center mb-5" style="color: black; font-family: 'Poppins', sans-serif; font-weight: bold;" id="crimeTypeTitle">Crime Type</h3>
+
+         <hr>
                 <table id="typeStatsTable">
                     <caption>Table showing crimes categorized by type</caption>
                     <thead>
@@ -95,13 +107,14 @@
 
     <!-- Action Buttons -->
     <div class="action-buttons text-center mt-5">
-        <a asp-page="/UserRatings/Create" class="btn btn-dark-blue btn-lg" aria-label="Submit a safety rating">
-            <i class="fas fa-edit" aria-hidden="true"></i> Submit a Safety Rating
+        <a asp-page="/UserRatings/Create" class="btn btn-red btn-lg" aria-label="Submit a safety rating">
+            <i class="fas fa-edit" aria-hidden="true"></i> SUBMIT A SAFETY RATING
         </a>
-        <a asp-page="/CrimeMap" class="btn btn-dark-blue btn-lg" aria-label="View ratings by neighborhood">
-            <i class="fas fa-map-marked-alt" aria-hidden="true"></i> View Ratings by Neighborhood
+        <a asp-page="/CrimeMap" class="btn btn-red btn-lg" aria-label="View ratings by neighborhood">
+            <i class="fas fa-map-marked-alt" aria-hidden="true"></i> VIEW RATINGS BY NEIGHBORHOOD
         </a>
     </div>
+
 </main>
 
 
