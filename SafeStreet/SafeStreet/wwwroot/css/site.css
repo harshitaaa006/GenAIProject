@@ -263,5 +263,34 @@ h1, h2, h3 {
         }
 
         .action-buttons a i {
-            margin-right: 10px; /* Space between icon and text */
+            margin-right: 10px; /
         }
+
+.footer-container {
+    text-align: center; 
+    font-size: 0.9rem;
+    color: #6c757d; 
+    padding: 20px 0; 
+    background-color: #f8f9fa; 
+    margin: 0 auto;
+    max-width: 960px; 
+    width: 100%; 
+}
+
+    
+    .footer-container a {
+        margin: 0 15px; 
+        color: #007bff; 
+        text-decoration: none; 
+    }
+
+        
+        .footer-container a:hover {
+            text-decoration: underline; 
+        }
+
+
+.separator {
+    margin: 0 10px; 
+    color: #6c757d; 
+}

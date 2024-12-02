@@ -93,6 +93,9 @@
                         <li b-o8z2mjie9s class="nav-item">
                             <a href="/CustomPages/ContactUs" class="nav-link">Contact Us</a>
                         </li>
+                        <li b-o8z2mjie9s class="nav-item">
+                            <a class="nav-link text-dark" asp-area="" asp-page="/Recipe">Recipes</a>
+                        </li>
 
                     </ul>
                 </div>
@@ -110,12 +113,16 @@
         </main>
     </div>
 
-    <footer class="border-top footer text-muted">
-        <div class="container">
-            &copy; 2024 - SafeStreet - <a asp-area="" asp-page="/Privacy">Privacy</a>
-            <a asp-page="/TermsAndConditions">Terms and Conditions</a>
-        </div>
-    </footer>
+    <hr>
+            <div class="footer-container">
+                &copy; 2024 - SafeStreet -
+                <a asp-area="" asp-page="/Privacy">Privacy</a>
+                <span class="separator">|</span>
+                <a asp-page="/TermsAndConditions">Terms and Conditions</a>
+            </div>
+           
+
+
 
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
