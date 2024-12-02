@@ -2,7 +2,6 @@
 @model SafeStreet.Pages.CrimeMapModel
 @{
     ViewData["Title"] = "Crime Map View";
-    var neighborhoods = Model.NeighborhoodSafetyScores;
 }
 
 <main>
@@ -25,7 +24,13 @@
     </section>
 
     <!-- Neighborhoods Grid -->
-    <section class="crime-map-grid" aria-labelledby="crimeMapGridTitle">
+    <!-- Selected Neighborhood Display -->
+   
+    <h2 id="selected-neighborhood" style="text-align: center; margin: 20px 0;">Select a Neighborhood</h2>
+    <div class="crime-map-grid">
+        @{
+            var neighborhoods = (Dictionary<string, (double Lat, double Lng, double SafetyScore)>)ViewData["NeighborhoodSafetyScores"];
+        }
         @foreach (var neighborhood in neighborhoods.OrderByDescending(kvp => kvp.Value.SafetyScore))
         {
             var safetyScore = neighborhood.Value.SafetyScore;
@@ -36,16 +41,52 @@
                 >= 40 => "medium-crime",
                 _ => "high-crime"
             };
-
-            <article class="grid-item @className" tabindex="0" role="button"
-                     aria-label="View @(neighborhood.Key) on map. Safety score: @(safetyScore.ToString("F1"))"
-                     onclick="showOnMap('@(neighborhood.Key)', @(neighborhood.Value.Lat), @(neighborhood.Value.Lng))">
-                <span>@(neighborhood.Key)</span>
+            <div class="grid-item @className" onclick="showOnMap('@neighborhood.Key', @neighborhood.Value.Lat, @neighborhood.Value.Lng)">
+                <span>@neighborhood.Key</span>
                 <br />
-                <span>Safety Score: @(safetyScore.ToString("F1"))</span>
-            </article>
+                <span>Safety Score: @safetyScore.ToString("F1")</span> <!-- Format score to 1 decimal place -->
+            </div>
         }
-    </section>
+    </div>
+
+    @section Scripts {
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCqP_MugU3SwtJMIOC_fZ562NoWCbklz3Q&libraries=places&callback=initMap" async defer></script>
+        
+    <script>
+        let map;
+        function initMap() {
+            const initialLocation = { lat: 39.1031, lng: -84.5120 }; // Default to Cincinnati
+            map = new google.maps.Map(document.getElementById("map"), {
+                center: initialLocation,
+                zoom: 12,
+            });
+        }
+        let currentMarker; // To keep track of the current marker
+        function showOnMap(name, lat, lng) {
+            // Update the selected neighborhood name
+            const neighborhoodNameElement = document.getElementById('selected-neighborhood');
+            neighborhoodNameElement.textContent = name;
+            
+            if (!isNaN(lat) && !isNaN(lng)) {
+                const mapCenter = { lat, lng };
+                // Update the map center and zoom
+                map.setCenter(mapCenter);
+                map.setZoom(14);
+                // Remove the old marker if it exists
+                if (currentMarker) {
+                    currentMarker.setMap(null); // Removes the marker from the map
+                }
+                // Add a marker
+                currentMarker = new google.maps.Marker({
+                                    position: mapCenter,
+                                    map: map,
+                                    title: name,
+                });
+            }
+        }
+    </script>
+}
+
 
     <!-- Action Buttons -->
     <div class="action-buttons text-center mt-5">
@@ -57,51 +98,6 @@
         </a>
     </div>
 </main>
-
-@section Scripts {
-    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCqP_MugU3SwtJMIOC_fZ562NoWCbklz3Q&libraries=places&callback=initMap" async defer></script>
-        
-    <script>
-let map; // Global map variable
-let currentMarker; // To track the current marker
-
-function initMap() {
-    const initialLocation = { lat: 39.1031, lng: -84.5120 }; // Default to Cincinnati
-    map = new google.maps.Map(document.getElementById("map"), {
-        center: initialLocation,
-        zoom: 12, // Default zoom level
-    });
-}
-
-function showOnMap(name, lat, lng) {
-    // Update the selected neighborhood name
-    const neighborhoodNameElement = document.getElementById('crimeMapGridTitle');
-    neighborhoodNameElement.textContent = name;
-
-    // Check if latitude and longitude are valid
-    if (!isNaN(lat) && !isNaN(lng)) {
-        const mapCenter = { lat, lng };
-
-        // Update the map's center and zoom level
-        map.setCenter(mapCenter);
-        map.setZoom(14);
-
-        // Remove the previous marker, if it exists
-        if (currentMarker) {
-            currentMarker.setMap(null); // Removes the marker from the map
-        }
-
-        // Add a new marker to the map
-        currentMarker = new google.maps.Marker({
-            position: mapCenter,
-            map: map,
-            title: name, // Set the tooltip text
-        });
-    }
-}
-
-    </script>
-}
 
 
 
