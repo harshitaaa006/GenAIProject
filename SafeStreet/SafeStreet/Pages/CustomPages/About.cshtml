@@ -5,17 +5,88 @@
 }
 
 <div class="container mt-5">
-    <h1>About Us</h1>
-    <p>Welcome to <strong>SafeStreet</strong>, a platform designed to help you make informed decisions about neighborhood safety. Our mission is to provide detailed insights into neighborhood crime statistics, historical trends, and safety scores so that you can feel confident about where you live, work, or visit.</p>
+    <div class="about-us-page">
+        <h1 class="title">About Us</h1>
+        <p class="intro">
+            Welcome to <span class="safeStreetText">SafeStreet</span>, a platform designed to help you make informed decisions about neighborhood safety.
+            Our mission is to provide detailed insights into neighborhood crime statistics, historical trends, and safety scores
+            so that you can feel confident about where you live, work, or visit.
+        </p>
 
-    <h2>SafeStreet Empowers Communities with:</h2>
-    <ul>
-        <li><strong>Crime Maps:</strong> Visual representations of crime data in various neighborhoods.</li>
-        <li><strong>Safety Scores:</strong> Calculated safety scores based on real-time data and historical trends.</li>
-        <li><strong>Comparisons:</strong> Side-by-side neighborhood comparisons to help you weigh safety factors.</li>
-    </ul>
+        <h2 class="subtitle">SafeStreet Empowers Communities with:</h2>
+        <ul class="features-list">
+            <li><strong>Crime Maps:</strong> Visual representations of crime data in various neighborhoods.</li>
+            <li><strong>Safety Scores:</strong> Calculated safety scores based on real-time data and historical trends.</li>
+            <li><strong>Comparisons:</strong> Side-by-side neighborhood comparisons to help you weigh safety factors.</li>
+        </ul>
 
-    <p>Our team is dedicated to transparency and accessibility in public safety data. We believe that by bringing this information to your fingertips, we can support safer, more informed communities.</p>
-
+        <p class="mission">
+            Our team is dedicated to transparency and accessibility in public safety data. We believe that by bringing this
+            information to your fingertips, we can support safer, more informed communities.
+        </p>
+    </div>
 </div>
 
+<style>
+    /* Font family consistent with layout */
+    .about-us-page {
+        font-family: 'Poppins', sans-serif;
+        color: #333; /* Neutral text color for readability */
+        background-color: #fff;
+        padding: 2rem;
+        border-radius: 8px;
+        box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1); /* Soft shadow for card effect */
+    }
+
+    .title {
+        font-size: 2.5rem;
+        font-weight: 700;
+        color: black; /* Set "About Us" title to black */
+        margin-bottom: 1rem;
+        text-align: center;
+    }
+
+    .intro {
+        font-size: 1.2rem;
+        line-height: 1.8;
+        margin-bottom: 2rem;
+        text-align: justify;
+        color: black; /* Ensure the intro paragraph is black */
+    }
+
+    .safeStreetText {
+        color: #F60000; /* Keep "SafeStreet" in red */
+    }
+
+    .subtitle {
+        font-size: 1.8rem;
+        font-weight: 600;
+        color: black; /* Set "SafeStreet Empowers Communities With" subtitle to black */
+        margin-top: 2rem;
+        margin-bottom: 1rem;
+    }
+
+    .features-list {
+        font-size: 1.1rem;
+        margin-left: 1.5rem;
+        list-style: disc;
+        color: black; /* Ensure list items are black */
+        line-height: 1.7;
+    }
+
+        .features-list li {
+            margin-bottom: 0.8rem;
+        }
+
+    .mission {
+        font-size: 1.2rem;
+        line-height: 1.8;
+        color: black; /* Ensure the mission paragraph is black */
+        margin-top: 2rem;
+        text-align: justify;
+    }
+
+    .about-us-page strong {
+        color: #F60000; /* Highlighting key elements in SafeStreet's theme color */
+    }
+</style>

@@ -1,18 +1,267 @@
-
-.landing-page {
-    height: 100vh;
-    background: url('../images/map-background.jpg') no-repeat center center fixed;
-    background-size: cover;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    text-align: center;
-    color: white;
+.css html {
+    font-size: 14px;
 }
 
-    .landing-page h1 {
-        font-size: 3rem;
-        font-weight: bold;
-        margin-bottom: 1rem;
+@media (min-width: 768px) {
+    html {
+        font-size: 16px;
     }
+}
+
+.btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
+    box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
+}
+
+.headerlogo {
+    height: 60px;
+    width: auto;
+}
+
+<style >
+h3 {
+    color: black;
+    font-family: 'Poppins', sans-serif;
+    font-weight: bold;
+}
+
+</style >
+
+
+html {
+    position: relative;
+    min-height: 100%;
+}
+
+body {
+    margin-bottom: 60px;
+    font-family: "Open Sans", sans-serif;
+}
+body {
+    background-color: #f8f8f8; /* Off-white background */
+    color: #333; /* Text color to maintain readability */
+    font-family: 'Lato', 'Roboto', 'Open Sans', sans-serif;
+}
+
+
+
+h1, h2, h3 {
+    font-family: 'Poppins', sans-serif;
+}
+
+
+.navbar {
+    border-bottom: 1px solid #ddd;
+    padding: 0px
+}
+
+.nav-item {
+    color: #1f2227;
+    margin-left: 1.2rem;
+}
+
+.footer {
+    text-align: center;
+    font-size: 0.9rem;
+    color: #6c757d;
+}
+
+.form-control, .form-select {
+    border-radius: 0.25rem;
+}
+
+.btn-primary {
+    background-color: #007bff;
+    border-color: #007bff;
+}
+
+    .btn-primary:hover {
+        background-color: #0056b3;
+        border-color: #004085;
+    }
+
+/* Safety Score Page */
+
+/* Map */
+#map-container {
+    position: relative;
+    width: 100%;
+    height: 600px;
+}
+
+#map {
+    width: 100%;
+    height: 100%;
+}
+
+#search-box {
+    position: absolute;
+    top: 15px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 5;
+    width: 300px;
+    height: 40px;
+    font-size: 14px;
+    padding: 5px 10px;
+    border: none;
+    outline: none;
+    background: white;
+    border-radius: 5px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+}
+
+.cards-container {
+    display: flex;
+    gap: 20px;
+    justify-content: center;
+    margin: 20px 0;
+    padding-top: 30px;
+}
+
+.card {
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    padding: 20px;
+    text-align: center;
+    width: 300px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    background-color: #fff;
+}
+
+/* Safety Score */
+.safety-score-card {
+}
+
+    .safety-score-card h3 {
+        font-size: 18px;
+        margin-bottom: 20px;
+        color: #333;
+        padding-bottom: 20px;
+    }
+
+.circle-score {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    background-color: #4caf50;
+    color: #fff;
+    font-size: 30px;
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto;
+}
+
+.score-bar {
+    margin: 20px 0;
+    width: 100%;
+    height: 10px;
+    background-color: #f1f1f1;
+    border-radius: 5px;
+    overflow: hidden;
+}
+
+.score-progress {
+    height: 100%;
+    background-color: #4caf50;
+    width: 0;
+    transition: width 0.5s ease;
+}
+
+.score-labels {
+    display: flex;
+    justify-content: space-between;
+    font-size: 12px;
+    color: #777;
+}
+
+/* Total Crime */
+.crime-total-card {
+}
+
+    .crime-total-card h2 {
+        font-size: 18px;
+        margin-bottom: 20px;
+        color: #333;
+    }
+
+.crime-total-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+    .crime-total-table th,
+    .crime-total-table td {
+        padding: 8px;
+        text-align: center;
+    }
+
+    .crime-total-table th {
+        font-weight: bold;
+    }
+
+/* Crime Type */
+.crime-type-card {
+    padding-top: 50px;
+}
+
+    .crime-type-card h3 {
+        text-align: center;
+        padding-bottom: 20px;
+    }
+
+#typeStatsTable {
+    width: 800px;
+    margin: 0 auto 20px;
+    text-align: left;
+    border-collapse: collapse;
+    border: 1px
+}
+
+    #typeStatsTable th,
+    #typeStatsTable td {
+        border: 1px solid #ccc;
+        padding: 8px;
+        text-align: left;
+    }
+
+    #typeStatsTable th {
+        background-color: #f4f4f4;
+    }
+
+    #typeStatsTable tr:nth-child(even) {
+        background-color: #f9f9f9;
+    }
+
+
+/* Styling for Action Buttons */
+.action-buttons {
+    display: flex;
+    justify-content: center; /* Align buttons horizontally */
+    gap: 20px; /* Space between buttons */
+    margin-top: 30px;
+}
+
+    .action-buttons a {
+        padding: 15px 25px;
+        font-size: 1.2rem;
+        font-weight: bold;
+        border-radius: 8px;
+        text-decoration: none;
+        color: black; /* Default text color: black */
+        background-color: #FF0000; /* Red background */
+        border: 2px solid #FF0000;
+        font-family: 'Lato', 'Roboto', 'Open Sans', sans-serif; /* Consistent theme font */
+        transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease; /* Added color transition */
+    }
+
+        .action-buttons a:hover {
+            background-color: #CC0000; /* Slightly darker red on hover */
+            border-color: #CC0000;
+            color: white; /* Change text color to white on hover */
+        }
+
+        .action-buttons a i {
+            margin-right: 10px; /* Space between icon and text */
+        }
