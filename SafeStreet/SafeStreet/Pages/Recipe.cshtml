@@ -1,4 +1,46 @@
 ﻿@page
+@using SafeStreet.Models
 @model SafeStreet.Pages.RecipeModel
 @{
+    ViewData["Title"] = "Salad Recipes";
+    List<Meal> meals = (List<Meal>)ViewData["Meals"];
+
 }
+
+<!-- Meals Section -->
+<section id="meals" class="meals-section">
+    <div class="container">
+        <h2 class="section-title">Delicious Meals</h2>
+        @if (Model.Meals != null && Model.Meals.Any())
+        {
+            <table class="meals-table">
+                <thead>
+                    <tr>
+                        <th>Meal Name</th>
+                        <th>Category</th>
+                        <th>Area</th>
+                        <th>Thumbnail</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var meal in Model.Meals)
+                    {
+                        <tr>
+                            <td>@meal.MealName</td>
+                            <td>@meal.Category</td>
+                            <td>@meal.Area</td>
+                            <td>
+                                <img src="@meal.MealThumbnail" alt="@meal.MealName" class="meal-thumbnail" style="max-width: 100px; height: auto;" />
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        }
+        else
+        {
+            <p>No meals found. Please try again later.</p>
+        }
+    </div>
+</section>
+
