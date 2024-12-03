@@ -1,6 +1,8 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.Data.SqlClient;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using SafeStreet.Data;
+using System.Configuration;
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
@@ -36,7 +38,20 @@ app.MapControllerRoute(
     name: "defalut",
     pattern: "{Controller=Home}/{action=CrimeMap}/{id?}");
 
-    
+
+using (var connection = new SqlConnection(builder.Configuration.GetConnectionString("SafeStreetContext")))
+{
+    try
+    {
+        connection.Open();
+        Console.WriteLine("Connection successful!");
+    }
+    catch (Exception ex)
+    {
+        Console.WriteLine($"Connection failed: {ex.Message}");
+    }
+}
 
 
 app.Run();
+
