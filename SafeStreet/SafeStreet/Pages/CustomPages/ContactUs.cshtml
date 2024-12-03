@@ -4,42 +4,127 @@
     ViewData["Title"] = "Contact Us";
 }
 <div class="container my-5">
-    <h1 class="text-center mb-5 text-primary">Contact Us</h1>
+    <!-- Title -->
+    <h1 class="text-center mb-5" id="pageTitle">Contact Us</h1>
 
+    <!-- Description Text -->
     <div class="row mb-5">
         <div class="col-lg-8 mx-auto">
-            <p class="lead text-center">
+            <p class="lead text-center" id="descriptionText">
                 Have questions, feedback, or concerns? Reach out to the SafeStreet team using the form below, and we’ll respond promptly.
             </p>
         </div>
     </div>
 
-    <form class="mb-5">
+    <!-- Contact Form -->
+    <form class="mb-5" id="contactForm">
         <div class="form-group">
-            <label for="name" class="text-primary font-weight-bold">Name</label>
+            <label for="name" class="font-weight-bold">Name</label>
             <input type="text" class="form-control" id="name" placeholder="Enter your name" required>
         </div>
         <div class="form-group">
-            <label for="email" class="text-primary font-weight-bold">Email</label>
+            <label for="email" class="font-weight-bold">Email</label>
             <input type="email" class="form-control" id="email" placeholder="Enter your email" required>
         </div>
         <div class="form-group">
-            <label for="message" class="text-primary font-weight-bold">Message</label>
+            <label for="message" class="font-weight-bold">Message</label>
             <textarea class="form-control" id="message" rows="5" placeholder="Your message" required></textarea>
         </div>
-        <button type="submit" class="btn btn-dark">Send Message</button>
+        <button type="submit" class="btn btn-primary">Send Message</button>
     </form>
 </div>
 
+<!-- Footer Section with Contact Info -->
+<div class="container">
+    <h2 class="text-center" id="contactFooterTitle">Still have questions?</h2>
+    <p class="text-center">Feel free to contact us at <a href="mailto:contact@safestreet.com">contact@safestreet.com</a>.</p>
+</div>
+
+<!-- Custom CSS -->
 <style>
-    .text-primary {
-        color: #007bff; /* SafeStreet's primary color for branding */
+    body {
+        font-family: 'Lato', 'Roboto', 'Open Sans', sans-serif; /* Consistent font */
+        color: #333; /* Main text color */
+        background-color: #fafafa; /* Light off-white background */
     }
-    .font-weight-bold {
+
+    #pageTitle {
+        color: black; /* Keep the title text in black */
         font-weight: bold;
-        font-family: Arial, sans-serif;
+        font-size: 2.5rem;
+    }
+
+    #descriptionText {
+        color: #333;
+        font-size: 1.1rem;
+    }
+
+    .form-group label {
+        color: #333;
+        font-size: 1rem;
+    }
+
+    .form-control {
+        border-radius: 8px;
+        border: 2px solid #ddd;
+        padding: 10px;
+        font-size: 1rem;
+    }
+
+        .form-control:focus {
+            border-color: #FF0000; /* Red border on focus */
+            box-shadow: 0 0 5px rgba(255, 0, 0, 0.5);
+        }
+
+    .btn-primary {
+        background-color: #FF0000; /* Red button */
+        border: 2px solid #FF0000;
+        color: white;
+        font-weight: bold;
+        padding: 10px 20px;
+        font-size: 1rem;
+        border-radius: 5px;
+        transition: background-color 0.3s ease, border-color 0.3s ease;
+    }
+
+        .btn-primary:hover {
+            background-color: #CC0000; /* Darker red on hover */
+            border-color: #CC0000;
+        }
+
+    #contactFooterTitle {
+        color: black; /* Keep the footer title in black */
+        font-size: 2rem;
+        font-weight: bold;
+        margin-top: 30px;
+    }
+
+        #contactFooterTitle + p {
+            font-size: 1.2rem;
+            color: #333;
+        }
+
+    a {
+        color: #FF0000;
+        text-decoration: none;
+    }
+
+        a:hover {
+            text-decoration: underline;
+        }
+
+    /* Responsive adjustments */
+    media (max-width: 768px) {
+        #pageTitle
+
+    {
+        font-size: 2rem; /* Adjust the title font size on smaller screens */
+    }
+
+    .form-group label,
+    .form-control {
+        font-size: 0.9rem; /* Adjust form labels and input fields */
+    }
+
     }
 </style>
-
-<h2>Contact Us</h2>
-<p>If you have any questions or feedback, feel free to contact us at <a href="mailto:contact@safestreet.com"></a>.</p>

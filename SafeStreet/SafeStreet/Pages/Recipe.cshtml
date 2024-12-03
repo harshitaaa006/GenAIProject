@@ -6,12 +6,12 @@
     List<Meal> meals = (List<Meal>)ViewData["Meals"];
 }
 
-<h1>Salad Recipes</h1>
-
 <!-- Meals Section -->
 <section id="meals" class="meals-section">
     <div class="container">
+        <hr>
         <h2 class="section-title">Delicious Meals</h2>
+        <hr/>
         @if (Model.Meals != null && Model.Meals.Any())
         {
             <table class="meals-table">
@@ -37,6 +37,61 @@
                     }
                 </tbody>
             </table>
+
+            <style>
+                /* Table Styling */
+                .meals-table {
+                    width: 100%;
+                    border-collapse: collapse; /* Removes spacing between cells */
+                    margin-top: 20px;
+                    font-family: 'Poppins', sans-serif;
+                    background-color: #ffffff; /* Background color for the table */
+                    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Soft shadow for better contrast */
+                }
+
+                    /* Header Styling */
+                    .meals-table th {
+                        background-color: #F60000; /* Red background for headers */
+                        color: white;
+                        padding: 12px;
+                        text-align: left;
+                        font-weight: bold;
+                        text-transform: uppercase; /* Uppercase letters for header */
+                    }
+
+                    /* Body Styling */
+                    .meals-table td {
+                        padding: 12px;
+                        border-bottom: 1px solid #ddd; /* Light border for rows */
+                        color: #333; /* Dark text color */
+                    }
+
+                    .meals-table tr:hover {
+                        background-color: #f9f9f9; /* Light background on hover */
+                    }
+
+                /* Thumbnail Image Styling */
+                .meal-thumbnail {
+                    border-radius: 5px; /* Rounded corners for images */
+                    max-width: 100px;
+                    height: auto;
+                }
+
+                /* Responsive Design */
+                media screen and (max-width: 768px) {
+                    .meals-table th, .meals-table td
+
+                {
+                    padding: 8px; /* Smaller padding on mobile */
+                }
+
+                .meal-thumbnail {
+                    max-width: 80px; /* Reduce image size on smaller screens */
+                }
+
+                
+            </style>
+
         }
         else
         {

@@ -12,9 +12,21 @@
     box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
 }
 
+.header {
+    margin-top: 20px;
+}
+
+
 .headerlogo {
     height: 60px;
     width: auto;
+}
+
+
+h3 {
+    color: black;
+    font-family: 'Poppins', sans-serif;
+    font-weight: bold;
 }
 
 
@@ -27,10 +39,18 @@ body {
     margin-bottom: 60px;
     font-family: "Open Sans", sans-serif;
 }
+body {
+    background-color: #f8f8f8; /* Off-white background */
+    color: #333; /* Text color to maintain readability */
+    font-family: 'Lato', 'Roboto', 'Open Sans', sans-serif;
+}
+
+
 
 h1, h2, h3 {
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-family: 'Poppins', sans-serif;
 }
+
 
 .navbar {
     border-bottom: 1px solid #ddd;
@@ -232,17 +252,48 @@ h1, h2, h3 {
         font-weight: bold;
         border-radius: 8px;
         text-decoration: none;
-        color: white;
-        background-color: #003366; /* Dark blue background */
-        border: 2px solid #003366;
-        transition: background-color 0.3s ease, border-color 0.3s ease;
+        color: black; /* Default text color: black */
+        background-color: #FF0000; /* Red background */
+        border: 2px solid #FF0000;
+        font-family: 'Lato', 'Roboto', 'Open Sans', sans-serif; /* Consistent theme font */
+        transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease; /* Added color transition */
     }
 
         .action-buttons a:hover {
-            background-color: #001f4d; /* Slightly darker blue on hover */
-            border-color: #001f4d;
+            background-color: #CC0000; /* Slightly darker red on hover */
+            border-color: #CC0000;
+            color: white; /* Change text color to white on hover */
         }
 
         .action-buttons a i {
-            margin-right: 10px; /* Space between icon and text */
+            margin-right: 10px; /
         }
+
+.footer-container {
+    text-align: center; 
+    font-size: 0.9rem;
+    color: #6c757d; 
+    padding: 20px 0; 
+    background-color: #f8f9fa; 
+    margin: 0 auto;
+    max-width: 960px; 
+    width: 100%; 
+}
+
+    
+    .footer-container a {
+        margin: 0 15px; 
+        color: #007bff; 
+        text-decoration: none; 
+    }
+
+        
+        .footer-container a:hover {
+            text-decoration: underline; 
+        }
+
+
+.separator {
+    margin: 0 10px; 
+    color: #6c757d; 
+}
