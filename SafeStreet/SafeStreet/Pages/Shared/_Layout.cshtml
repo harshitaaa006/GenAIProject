@@ -7,122 +7,142 @@
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/SafeStreet.styles.css" asp-append-version="true" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #fff3e6;
+            color: #5d4037;
+        }
+
+        .navbar {
+            background-color: #FF0000; /* Solid red background */
+            border-bottom: 2px solid #F60000; /* Maintain bottom border */
+            padding: 0.5rem 1rem;
+            position: fixed;
+            width: 100%;
+            z-index: 1000;
+        }
+
+        .navbar-brand {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #000 !important; /* Black font for brand */
+            display: flex;
+            align-items: center;
+        }
+
+            .navbar-brand img {
+                height: 40px;
+                margin-right: 10px;
+            }
+
+        .nav-link {
+            color: #000 !important; /* Black font for nav links */
+            font-weight: 600;
+            text-transform: uppercase;
+            margin: 0 10px;
+            position: relative;
+            font-size: 1rem;
+        }
+
+            .nav-link:hover {
+                color: #fff !important; /* White font on hover */
+            }
+
+        .nav-item {
+            margin-right: 15px;
+        }
+
+        /* Chatbot Styling */
+        #dify-chatbot-bubble-button {
+            background-color: #1C64F2 !important;
+        }
+
+        #dify-chatbot-bubble-window {
+            width: 24rem !important;
+            height: 40rem !important;
+        }
+
+    </style>
+
+    @await RenderSectionAsync("Styles", required: false)
 </head>
 
-<style>
-
-
-
-
-    .navbar {
-        background-color: #FF0000; /* Solid red background */
-        border-bottom: 2px solid #F60000; /* Maintain bottom border */
-        padding: 0.5rem 1rem;
-        position: fixed;
-        width: 100%;
-        z-index: 1000;
-    }
-
-    .navbar-brand {
-        font-size: 1.5rem;
-        font-weight: 700;
-        color: #000 !important; /* Black font for brand */
-        display: flex;
-        align-items: center;
-    }
-
-        .navbar-brand img {
-            height: 40px;
-            margin-right: 10px;
-        }
-
-    .nav-link {
-        color: #000 !important; /* Black font for nav links */
-        font-weight: 600;
-        text-transform: uppercase;
-        margin: 0 10px;
-        position: relative;
-        font-size: 1rem;
-    }
-
-        .nav-link:hover {
-            color: #fff !important; /* White font on hover */
-        }
-
-    .nav-item {
-        margin-right: 15px;
-    }
-
-    media (max-width: 576px) {
-        .nav-item
-
-    {
-        margin-right: 0;
-        margin-bottom: 10px;
-    }
-
-    }
-</style>
-
-
-
-
 <body>
-    <header b-o8z2mjie9s>
-        <nav b-o8z2mjie9s class="navbar navbar-expand-sm navbar-light">
-            <div b-o8z2mjie9s class="container">
+    <header>
+        <nav class="navbar navbar-expand-sm navbar-light">
+            <div class="container">
                 <a class="navbar-brand" href="/">
                     <img src="/lib/SafeStreetLogo.jpeg" alt="SafeStreet Logo" />
                     SafeStreet
                 </a>
-                <button b-o8z2mjie9s class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse"
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse"
                         aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-                    <span b-o8z2mjie9s class="navbar-toggler-icon"></span>
+                    <span class="navbar-toggler-icon"></span>
                 </button>
-                <div b-o8z2mjie9s class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
-                    <ul b-o8z2mjie9s class="navbar-nav flex-grow-1">
-                        <li b-o8z2mjie9s class="nav-item">
+                <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
+                    <ul class="navbar-nav flex-grow-1">
+                        <li class="nav-item">
                             <a class="nav-link" href="/">Map</a>
                         </li>
-                        <li b-o8z2mjie9s class="nav-item">
+                        <li class="nav-item">
                             <a class="nav-link" href="/CrimeMap">Neighborhood Ratings</a>
                         </li>
-                        <li b-o8z2mjie9s class="nav-item">
+                        <li class="nav-item">
                             <a href="/CustomPages/About" class="nav-link">About Us</a>
                         </li>
-                        <li b-o8z2mjie9s class="nav-item">
+                        <li class="nav-item">
                             <a href="/CustomPages/ContactUs" class="nav-link">Contact Us</a>
                         </li>
-                        <li b-o8z2mjie9s class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-page="/Recipe">Recipes</a>
-                        </li>
-
                     </ul>
                 </div>
             </div>
         </nav>
     </header>
-    <div b-o8z2mjie9s class="container">
-        <main b-o8z2mjie9s role="main" class="pb-3">
+
+    <div class="container">
+        <main role="main" class="pb-3">
             <header>
                 <h1 id="pageTitle">Welcome to SafeStreet Crime Data Analysis</h1>
             </header>
-    <div class="container">
-        <main role="main" class="pb-3">
-            @RenderBody()
+
+            <div class="container">
+                <main role="main" class="pb-3">
+                    @RenderBody()
+                </main>
+            </div>
+
+            <hr>
+            <div class="footer-container">
+                &copy; 2024 - SafeStreet -
+                <a asp-area="" asp-page="/Privacy">Privacy</a> |
+                <a asp-page="/TermsAndConditions">Terms and Conditions</a>
+            </div>
         </main>
     </div>
 
-    <hr>
-            <div class="footer-container">
-                &copy; 2024 - SafeStreet -
-                <a asp-area="" asp-page="/Privacy">Privacy</a>
-                <span class="separator">|</span>
-                <a asp-page="/TermsAndConditions">Terms and Conditions</a>
-            </div>
-           
+    <!-- Dify Chatbot Integration -->
+    <script>
+        window.difyChatbotConfig = {
+            token: 'AAqIyAwc8UACvJYv', // Replace with actual chatbot token
+            baseUrl: 'http://localhost' // Change if using a custom deployment
+        };
+    </script>
+    <script src="http://localhost/embed.min.js" id="AAqIyAwc8UACvJYv" defer></script>
 
-
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            // Ensure chatbot initializes properly
+            if (window.difyChatbot) {
+                console.log("Dify chatbot initialized successfully.");
+            } else {
+                console.error("Dify chatbot failed to load. Check your token and baseUrl.");
+            }
+        });
+    </script>
 
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>

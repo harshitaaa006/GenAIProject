@@ -3,12 +3,22 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using SafeStreet.Data;
 using System.Configuration;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddRazorPages();
 builder.Services.AddDbContext<SafeStreetContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("SafeStreetContext") ?? throw new InvalidOperationException("Connection string 'SafeStreetContext' not found.")));
+    options.UseSqlServer(
+        builder.Configuration.GetConnectionString("SafeStreetContext") ?? throw new InvalidOperationException("Connection string 'SafeStreetContext' not found."),
+        sqlOptions => sqlOptions.EnableRetryOnFailure(
+            maxRetryCount: 5,       // Max retries
+            maxRetryDelay: TimeSpan.FromSeconds(10),  // Delay between retries
+            errorNumbersToAdd: null // Optionally specify error numbers to retry on
+        )
+    )
+);
+
 builder.Services.AddConnections();
 builder.Services.AddEndpointsApiExplorer();
 builder.Configuration["MapboxApiKey"] = Environment.GetEnvironmentVariable("MAPBOX_API_KEY");
@@ -38,7 +48,7 @@ app.MapControllerRoute(
     name: "defalut",
     pattern: "{Controller=Home}/{action=CrimeMap}/{id?}");
 
-
+// Checking the SQL connection
 using (var connection = new SqlConnection(builder.Configuration.GetConnectionString("SafeStreetContext")))
 {
     try
@@ -52,6 +62,4 @@ using (var connection = new SqlConnection(builder.Configuration.GetConnectionStr
     }
 }
 
-
 app.Run();
-
